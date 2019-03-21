@@ -1,0 +1,63 @@
+\documentclass{amsbook}
+\newcommand{\xx}{\mathbf x}
+\newcommand{\cc}{\mathbf c}
+\newcommand{\bb}{\mathbf b}
+\newcommand{\RR}{\mathbf R}
+\newtheorem{theorem}{Theorem}[section]
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\theoremstyle{remark}
+\newtheorem{example}[theorem]{Example}
+\newtheorem{exercise}[theorem]{Exercise}
+\begin{document}
+\title{Linear Programming in Combinatorics}
+\author{Amritanshu Prasad}
+\address{The Institute of Mathematical Sciences, Chennai.}
+\address{Homi Bhabha National Institute, Mumbai.}
+\email{amri@imsc.res.in}
+\date{\today}
+\maketitle
+\chapter{Introduction to Linear Programming}
+\label{cha:intro-lp}
+\section{Feasibility and Optimization}
+\label{sec:feas-opt}
+A linear program in equational form consists of a set of variables, $\xx=(x_1,\dotsc,x_n)$, an $m\times n$ matrix with real entries $A$, a bound vector $\bb=(b_1,\dotsc,b_m)$, and an objective functional $\cc = (c_1,\dotsc,c_n)$.
+The \emph{linear program} is the problem:
+\begin{equation}
+  \label{eq:lp-problem}
+  \text{maximize $\cc^T\xx$ subject to $\xx\geq 0$ and $A\xx=\bb$}.
+\end{equation}
+The set of all vectors satisfying $\xx\geq 0$ and $A\xx=\bb$ is called the set of all \emph{feasible solutions}.
+The vector $\cc$ is called the \emph{objective vector}, and the function $\xx\mapsto \cc^T\xx$ is called the \emph{objective function}.
+Sometimes we will only be interested in the set of feasible solutions, which does not depend on the objective vector.
+
+Assume without loss of generality that $\bb$ lies in the column space of $A$, and that the rows of $A$ are linearly independent.
+For a subset $B\subset \{1,\dotsc,n\}$, let $A_B$ denote the subatrix of $A$ consisting of columns from $B$.
+\begin{definition}
+  [Basic feasible solution]
+  A basic feasible solution to \eqref{eq:lp-problem} is a feasible solution $\xx\in \RR^n$ for which there exists an $m$-element set $B\subset [n]$ such that
+  \begin{itemize}
+  \item the (square) matrix $A_B$ is non-singular,
+  \item $x_j=0$ for all $j\notin B$.
+  \end{itemize}
+\end{definition}
+\begin{exercise}
+  Recall that an \emph{extreme point} of a set $S\subset \RR^n$ is a point $\xx\in S$ that cannot be expressed as a convex combination of two distinct points in $S$.
+  Show that the basic feasible solutions are the extreme points of the set of feasible solutions to \eqref{eq:lp-problem}.
+  Hint: Note that the basic feasible solutions lie on the intersection of the affine subspace $A\xx=\bb$ and an intersection of coordinate hyperplanes of dimension $m$.
+\end{exercise}
+\begin{example}[The Birkhoff polytope]
+  Take $n=d^2$, indexing the $d^2$ variables as $\xx=(x_{ij})_{1\leq i,j\leq d}$, a square array of size $d$.
+  As constraints, say that the row sums and column sums of $\xx$ are all equal to $1$, i.e.,
+  \begin{align*}
+    \sum_i x_{ij} &= 1 \text{ for } j=1,\dotsc,d\\
+    \sum_j x_{ij} &= 1 \text{ for } j=1,\dotsc,d.
+  \end{align*}
+  These $2d$ constraints are not independent--the sum of the row sum constaints is equal to the sum of the column sum constraints, which is the same as the constraint that all entries of the matrix add up to $d$.
+  Removing, say the last column constraint gives a $(2d-1)\times d^2$ matrix $A$ of rank $2d-1$.
+
+  What are the basic feasible solutions?
+  Given a subset $S$ of $[d]^2$, let $\cc=(c_{ij})$ be the array whose $(i,j)$th entry is $1$ if $(i,j)\in S$, and $0$ otherwise.
+  What is the correspondence between subsets $S\subsbet [d]^2$ and the basic feasible solutions that maximize the corresponding objective function?
+\end{example}
+\end{document}

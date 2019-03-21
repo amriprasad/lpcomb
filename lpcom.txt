@@ -1,0 +1,27 @@
+Linear Programming, Flows in Networks, and Combinatorics
+--------------------------------------------------------
+
+A six-week minicourse (18 hours)
+
+Syllabus:
+---------
+
+1. Introduction to Linear programming (6 hours)
+   Following Gartner and Matousek, Chapters 4, 5, 6
+   a. Feasibility and optimization
+   b. Simplex method
+   c. LP Duality
+   
+2. Introduction to Flows in Networks (6 hours)
+   Ford and Fulkerson, Flows in Networks, Chapters I, II, III
+   a. Algorithms for flow maximization
+   b. Max flow-min cut theorem
+   c. The feasibility problem
+   d. Gale-Ryser, Erdos-Gallai and similar theorems
+
+3. Integer Programming (6 hours)
+   Schrijver, Theory of Linear and Integer Programming, Part IV, Stanley, Enumerative Combinatorics I.
+   a. Ehrhart theory 
+   b. Complexity of Integer Linear programming 
+   c. Totally unimodular matrices 
+   d. Characterizations of unimodularity
