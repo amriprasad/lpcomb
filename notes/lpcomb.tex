@@ -1,14 +1,19 @@
 \documentclass{amsbook}
+\newcommand{\vv}{\mathbf v}
 \newcommand{\xx}{\mathbf x}
+\newcommand{\yy}{\mathbf y}
 \newcommand{\cc}{\mathbf c}
 \newcommand{\bb}{\mathbf b}
+\newcommand{\supp}{\mathrm{supp}}
 \newcommand{\RR}{\mathbf R}
 \newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
 \theoremstyle{definition}
 \newtheorem{definition}[theorem]{Definition}
 \theoremstyle{remark}
 \newtheorem{example}[theorem]{Example}
 \newtheorem{exercise}[theorem]{Exercise}
+\newtheorem{remark}[theorem]{Remark}
 \begin{document}
 \title{Linear Programming in Combinatorics}
 \author{Amritanshu Prasad}
@@ -27,26 +32,24 @@ The \emph{linear program} is the problem:
   \label{eq:lp-problem}
   \text{maximize $\cc^T\xx$ subject to $\xx\geq 0$ and $A\xx=\bb$}.
 \end{equation}
-The set of all vectors satisfying $\xx\geq 0$ and $A\xx=\bb$ is called the set of all \emph{feasible solutions}.
+The set $P=P(A,\bb)$ of all vectors satisfying $\xx\geq 0$ and $A\xx=\bb$ is called the polytope of all \emph{feasible solutions}.
 The vector $\cc$ is called the \emph{objective vector}, and the function $\xx\mapsto \cc^T\xx$ is called the \emph{objective function}.
 Sometimes we will only be interested in the set of feasible solutions, which does not depend on the objective vector.
 
 Assume without loss of generality that $\bb$ lies in the column space of $A$, and that the rows of $A$ are linearly independent.
 For a subset $B\subset \{1,\dotsc,n\}$, let $A_B$ denote the subatrix of $A$ consisting of columns from $B$.
+We say that $B$ is a \emph{basic set} if $B$ has $m$ elements and $A_B$ has rank $m$.
+For $\xx\in \RR_+^n$ define:
+\begin{displaymath}
+  \supp(\xx)=\{1\leq j\leq n\mid x_j\neq 0\}.
+\end{displaymath}
 \begin{definition}
   [Basic feasible solution]
-  A basic feasible solution to \eqref{eq:lp-problem} is a feasible solution $\xx\in \RR^n$ for which there exists an $m$-element set $B\subset [n]$ such that
-  \begin{itemize}
-  \item the (square) matrix $A_B$ is non-singular,
-  \item $x_j=0$ for all $j\notin B$.
-  \end{itemize}
+  A \emph{basic feasible solution} to \eqref{eq:lp-problem} is a feasible solution $\xx\in P(A,\bb)$ such that $\supp(\xx)$ is contained in a basic set.
 \end{definition}
-\begin{exercise}
-  Recall that an \emph{extreme point} of a set $S\subset \RR^n$ is a point $\xx\in S$ that cannot be expressed as a convex combination of two distinct points in $S$.
-  Show that the basic feasible solutions are the extreme points of the set of feasible solutions to \eqref{eq:lp-problem}.
-  Hint: Note that the basic feasible solutions lie on the intersection of the affine subspace $A\xx=\bb$ and an intersection of coordinate hyperplanes of dimension $m$.
-\end{exercise}
+Clearly, a feasible solution $\xx$ is basic if and only if the submatrix $A_{\supp(\xx)}$ has linearly independent columns.
 \begin{example}[The Birkhoff polytope]
+  \label{example:birkhoff}
   Take $n=d^2$, indexing the $d^2$ variables as $\xx=(x_{ij})_{1\leq i,j\leq d}$, a square array of size $d$.
   As constraints, say that the row sums and column sums of $\xx$ are all equal to $1$, i.e.,
   \begin{align*}
@@ -56,8 +59,90 @@ For a subset $B\subset \{1,\dotsc,n\}$, let $A_B$ denote the subatrix of $A$ con
   These $2d$ constraints are not independent--the sum of the row sum constaints is equal to the sum of the column sum constraints, which is the same as the constraint that all entries of the matrix add up to $d$.
   Removing, say the last column constraint gives a $(2d-1)\times d^2$ matrix $A$ of rank $2d-1$.
 
-  What are the basic feasible solutions?
+  When $d=2$, the equation is:
+  \begin{equation}
+    \label{eq:birkhoff2}
+    \begin{pmatrix}
+      1 & 1 & 0 & 0\\
+      0 & 0 & 1 & 1\\
+      1 & 0 & 1 & 0
+    \end{pmatrix}
+    \begin{pmatrix}
+      x_{11}\\x_{12}\\x_{21}\\x_{22}
+    \end{pmatrix}
+    =
+    \begin{pmatrix}
+     1\\1\\1
+    \end{pmatrix}.
+  \end{equation}
+  Every submatrix of $A$ with three columns is non-singular.
+  Thus there are four possible basic sets, but only two basic solutions given by the $2\times 2$ permutation matrices.
+
+  In general, what are the possible basic sets and basic feasible solutions?
+  Let $\sigma\in S_d$ and suppose $\xx$ is the permutation matrix $x_{ij}=\delta_{i\sigma(i)}$.
+  Then $\supp(\xx)=\{(i,\sigma_i)\mid i\in [d]\}$.
+  The first $d$ rows of the corresponding column vectors of $A$ are just the coordinate vectors of $\RR^d$.
+  Therefore each permutation matrix is a basic feasible solution.
+  What basic sets does it correspond to?
+  Can you show that there are no more basic feasible solutions?
+  
   Given a subset $S$ of $[d]^2$, let $\cc=(c_{ij})$ be the array whose $(i,j)$th entry is $1$ if $(i,j)\in S$, and $0$ otherwise.
-  What is the correspondence between subsets $S\subsbet [d]^2$ and the basic feasible solutions that maximize the corresponding objective function?
+  What is the correspondence between subsets $S\subset [d]^2$ and the basic feasible solutions that maximize the corresponding objective function?
 \end{example}
+\begin{lemma}
+  \label{lemma:unique-for-B}
+  For each subset $B\subset [d]$ such that $A_B$ is non-singular, there exists at most one basic feasible solution with basic set $B$.
+\end{lemma}
+\begin{proof}
+  Let $\xx_B$ denote the vector $(x_i)_{i\in B}$.
+  The matrix $A_B$ is non-singular, so the equation $A_B\xx_B=\bb$ has at most one solution.
+  Now $\xx$ is a solution of $A\xx=\bb$ with basic set $B$ if and only if $A_B\xx_B=\bb$.
+  Therefore such $\xx$ is unique.
+\end{proof}
+\begin{remark}
+  The same basic feasible solution could be obtained from different sets of $B$ of basic variables.
+  For example, each basic solution for \eqref{eq:birkhoff2} corresponds to two basic sets.
+\end{remark}
+\begin{theorem}
+  [Existence of basic solution]
+  \label{theorem:existence-of-basic-solutions}
+  For a linear program in equational form:
+  \begin{displaymath}
+    \text{maximize $\cc^t\xx$ subject to $A\xx=\bb$, $\xx\geq 0$}
+  \end{displaymath}
+  if there is at least one optimal solution, and the objective function is bounded above on the feasible set, then there exists at least one optimal solution, and among the optimal solutions there is at least one basic solution.
+\end{theorem}
+\begin{proof}
+  We claim that, for any feasible solution $\xx_0$ there exists a basic feasible solution $\xx$ with $\cc^T\xx\geq \cc^T\xx_0$.
+  Suppose $\xx$ is a basic feasible solution.
+  Among all feasible solutions $\xx$ with $\cc^T\xx\geq \cc^T\xx_0$ choose one with support of minimal cardinality and call it $\tilde \xx$.
+  If $A_{\supp(\tilde \xx)}$ is non-singular then $\tilde \xx$ is basic and we are done.
+  Otherwise, there exists a vector $\yy\in \RR^n$ with $\supp(\yy)\subset \supp(\xx)$ such that $A\yy=0$.
+  Replacing $\yy$ by $-\yy$ if necessary, assume that $\cc^T\yy\geq 0$.
+
+  We claim that we may further assume that $\yy$ has at least one \emph{negative} coordinate.
+  Suppose that all the coordinates of $\yy$ are non-negative.
+  If $\cc^T\yy=0$, then we can replace $\yy$ with $-\yy$.
+  If $\cc^T\yy>0$ and all coordinates of $\yy$ are positive, then $\tilde\xx+t\yy$ is a feasible solution for all $t>0$.
+  The objective function $\cc^T(\tilde\xx+t\yy)$ grows unboundedly as $t$ grows, contradicting its boundedness.
+
+  Since $\yy$ has at least one negative coordinate, it is possible to choose a value $t>0$ such that $\supp(\tilde\xx+t\yy)$ is strictly smaller than $\supp(\tilde\xx)$.
+  This contradicts the minimality condition on the cardinality of $\supp(\tilde\xx)$.
+\end{proof}
+\begin{definition}
+  [Vertex]
+  \label{definition:vertex}
+  Let $P\subset \RR^n$ be convex closed set.
+  An element $\vv\in P$ is said to be a \emph{vertex} of $P$ if there exists $\cc\in \RR^n$ such that $\cc^T\xx$ attains its maximum uniquely at $\vv$.
+\end{definition}
+Theorem~\ref{theorem:existence-of-basic-solutions} says that every vertex of $P(A,\bb)$ is a basic feasible solution.
+The converse is also true:
+\begin{theorem}
+  Every basic feasible solution to \eqref{eq:lp-problem} is a vertex of $P(A,\bb)$.
+\end{theorem}
+\begin{proof}
+  Let $B\subset [n]$ be a basic subset $\vv$ be a basic feasible solution to \eqref{eq:lp-problem} with respect to $B$.
+  Define $\cc$ to be the vector with $c_j=0$ for $j\in B$, and $c_j=-1$ otherwise.
+  Then $\cc^T\vv=0$, and by Lemma~\ref{lemma:unique-for-B}, $\cc^T\xx<0$ for every $\xx\in P$.
+\end{proof}
 \end{document}
