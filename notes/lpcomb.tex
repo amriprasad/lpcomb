@@ -221,20 +221,29 @@ This data is represented in terms of a \emph{simplex tableau}:
   \begin{matrix}
     \xx_B & = & \mathbf d - D\xx_{\bar B}\\
     \hline
-    \cc^T\xx & = & \mathbf e^T \xx_{\bar B}.
+    \cc^T\xx & = & e - \mathbf e^T \xx_{\bar B}.
   \end{matrix}
 \end{equation}
+Here:
+\begin{align*}
+  \mathbf d & = A_B^{-1}\bb\\
+  D & = A_B^{-1}A_{\bar B}\\
+  e & = \cc_B^T \mathbf d\\
+  \mathbf e^T & = \cc_B^TD - \cc_{\bar B}^T.
+\end{align*}
 There are $m$ equations above, one for each basic variable, expressing it as an affine linear combination of the basic variables.
 The last line of (\ref{eq:tableau}) is simply the objective function expressed in terms of the basic variables.
 The information contained in \eqref{eq:tableau} is equivalent to the information in \eqref{eq:lp-problem}.
-But \eqref{eq:tableau} gives a sort-of parametrization of $P(A,b)$:
+But \eqref{eq:tableau} gives a sort-of parametrization of $P(A,b)$.
+Note that $\xx$ is determined by $\xx_B$ and $\xx_{\bar B}$. We have:
 \begin{quote}
-  Each point in $P(A,b)$ corresponds to a unique vector $\xx_{\bar B}\in \RR^{n-m}$ with non-negative coordinates such that each of the values of $x_j$ computed by using \eqref{eq:tableau} is non-negative.
+  Each vector $\xx\in P(A,b)$ corresponds to a unique vector $\xx_{\bar B}\in \RR_{\geq 0}^{n-m}$ with $\xx_B$ computed by using \eqref{eq:tableau} is non-negative.
+  Under this correspondence the basic feasible solution corresponding to $B$ (if it exists) comes from $\xx_{\bar B}=0$.
 \end{quote}
 \begin{example}
   \label{example:birkhoof2-tableau}
-  Consider the Birkhoff polytope (Example~\ref{example:birkhoff}) for $d=2$.
-  For conevnience we abbreviate the variable indices $(i,j)$ to $ij$.
+  Consider the Birkhoff polytope (Example~\ref{example:birkhoff}) for $d=3$.
+  For convenience we abbreviate the variable indices $(i,j)$ to $ij$.
   The matrix $A$ has columns indexed by pairs in $[d]\times [d]$ written in increasing lexicographic order:
   \begin{displaymath}
     A =
