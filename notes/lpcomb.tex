@@ -225,8 +225,14 @@ This data is represented in terms of a \emph{simplex tableau}:
   \end{matrix}
 \end{equation}
 There are $m$ equations above, one for each basic variable, expressing it as an affine linear combination of the basic variables.
-The last line of (\ref{eq:tableau}) is simply the objective function expresses in terms of the basic variables.
+The last line of (\ref{eq:tableau}) is simply the objective function expressed in terms of the basic variables.
+The information contained in \eqref{eq:tableau} is equivalent to the information in \eqref{eq:lp-problem}.
+But \eqref{eq:tableau} gives a sort-of parametrization of $P(A,b)$:
+\begin{quote}
+  Each point in $P(A,b)$ corresponds to a unique vector $\xx_{\bar B}\in \RR^{n-m}$ with non-negative coordinates such that each of the values of $x_j$ computed by using \eqref{eq:tableau} is non-negative.
+\end{quote}
 \begin{example}
+  \label{example:birkhoof2-tableau}
   Consider the Birkhoff polytope (Example~\ref{example:birkhoff}) for $d=2$.
   For conevnience we abbreviate the variable indices $(i,j)$ to $ij$.
   The matrix $A$ has columns indexed by pairs in $[d]\times [d]$ written in increasing lexicographic order:
@@ -245,13 +251,62 @@ The last line of (\ref{eq:tableau}) is simply the objective function expresses i
   The corresponding simplex tableau is:
   \begin{displaymath}
     \begin{matrix}
-      x_{21} & = & x_{11} -x_{12}+x_{22}\\
-      x_{23} & = & -x_{12}+x_{13}+x_{22}\\
-      x_{32} & = & x_{11} - x_{13} + x_{31}\\
-      x_{33} & = & x_{12} -x_{13}+x_{31}\\
+      x_{11} & = & -x_{21} +x_{32}+x_{33}\\
+      x_{12} & = & x_{21}+x_{23}-x_{32}\\
+      x_{13} & = & 1-x_{23}-x_{33}\\
+      x_{22} & = & 1-x_{21} -x_{23}\\
+      x_{31} & = & 1-x_{32}-x_{33}\\
       \hline
-      \cc^T\xx & = & x_{11} + x_{12} - x_{13} + x_{22} + x_{31} 
+      \cc^T\xx & = & 1-2x_{21}-x_{23}+x_{32}+2x_{33}.
     \end{matrix}
   \end{displaymath}
+  In the above example, the objective function can be increased by increasing $x_{32}$ or $x_{33}$.
+  However, this increase should respect the constraints that all the variables are non-negative.
+  The condition $x_{12}\geq 0$ (using the second equation, and leaving the values of $x_{21}$ and $x_{23}$ unchanged at $0$) gives $x_{32}\leq 0$.
+  Therefore, it is not feasible to increase $x_{32}$.
+  However, it is feasible to increase $x_{33}$.
+  The conditions $x_{13}\geq 0$ and $x_{31}\geq 0$ give $x_{33}\leq 1$.
+  So we set $x_{33}=1$, and recalculate all the basic variables, getting $x_{11}=x_{22}=x_{33}=1$, and all other variables $0$.
+  We move $x_{33}$ to the set of basic variables, and move $x_{13}$ to the set of non-basic (which has now become $0$), and use the equation:
+  \begin{displaymath}
+    x_{33}=1-x_{13}-x_{23}.
+  \end{displaymath}
+  Using this we get a new tableau:
+  \begin{displaymath}
+    \begin{matrix}
+      x_{11} & = & 1-x_{21} +x_{32}+x_{23}-x_{13}\\
+      x_{12} & = & x_{21}+x_{23}-x_{32}\\
+      x_{22} & = & 1-x_{21} -x_{23}\\
+      x_{31} & = & x_{13}+x_{23}-x_{32}-x_{33}\\
+      x_{33} & = & 1-x_{23}-x_{13}\\
+      \hline
+      \cc^T\xx & = & 3-2x_{13}-2x_{21}-3x_{23}+x_{32}.
+    \end{matrix}
+  \end{displaymath}
+  All the non-basic variables have negative coefficients, except $x_{32}$.
+  However, the constrain $x_{12}\geq 0$ still does not allow us to increase $x_{32}$ without changing any other non-basic variable.
+  This suggests that we may have arrived at a maximum value for the objective function.
+  Indeed, $x_{12}=x_{21}+x_{23}-x_{32}\geq 0$ implies that $x_{32}\leq x_{21}+x_{23}$, whene
+  \begin{displaymath}
+    \cc^T\xx=3-2x_{13}-2x_{21}-3x_{23}+x_{32}\leq 3-2x_{13}-x_{21}-2x_{23}\leq 3.
+  \end{displaymath}
+  Therefore $3$ is indeed a global maximum for the objective function, and is obtained uniquely at $x_{ij}=\delta_{ij}$.
+
+  An alternative approach would be to induct $x_{32}$ into the set of basic variables, and remove $x_{12}$.
+  Now the basic set is changed to $\{11,22,31,32,33\}$, but the basic feasible solution remains unchanged.
+  This will result in the tableau:
+  \begin{displaymath}
+    \begin{matrix}
+      x_{11} & = & 1-x_{12}+x_{32}+2x_{23}-x_{13}\\
+      x_{22} & = & 1-x_{21} -x_{23}\\
+      x_{31} & = & x_{12}+x_{13}-x_{21}-x_{33}\\
+      x_{32} & = & x_{21}+x_{23}-x_{12}\\
+      x_{33} & = & 1-x_{23}-x_{13}\\
+      \hline
+      \cc^T\xx & = & 3-2x_{13}-x_{21}-2x_{23}-x_{12}.
+    \end{matrix}
+  \end{displaymath}
+  In this case, all the coefficients of the objective function are negative, from which it immediately follows that $x_{ij}=\delta_{ij}$ is the unique global maximum.
 \end{example}
+
 \end{document}
