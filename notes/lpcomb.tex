@@ -26,20 +26,22 @@
 \label{cha:intro-lp}
 \section{Feasibility and Optimization}
 \label{sec:feas-opt}
-A linear program in equational form consists of a set of variables, $\xx=(x_1,\dotsc,x_n)$, an $m\times n$ matrix with real entries $A$, a bound vector $\bb=(b_1,\dotsc,b_m)$, and an objective functional $\cc = (c_1,\dotsc,c_n)$.
+A linear program in equational form consists of a set of variables, $\xx=(x_1,\dotsc,x_n)$, an $m\times n$ matrix with real entries $A$, a bound vector $\bb=(b_1,\dotsc,b_m)$, and an objective vector $\cc = (c_1,\dotsc,c_n)$.
 The \emph{linear program} is the problem:
 \begin{equation}
+  \tag{LP}
   \label{eq:lp-problem}
   \text{maximize $\cc^T\xx$ subject to $\xx\geq 0$ and $A\xx=\bb$}.
 \end{equation}
 The set $P=P(A,\bb)$ of all vectors satisfying $\xx\geq 0$ and $A\xx=\bb$ is called the polytope of all \emph{feasible solutions}.
-The vector $\cc$ is called the \emph{objective vector}, and the function $\xx\mapsto \cc^T\xx$ is called the \emph{objective function}.
+The function $\xx\mapsto \cc^T\xx$ is called the \emph{objective function}.
+An \emph{optimal solution} is a vector $\xx_0\in P(A,\bb)$ such that $\cc^T\xx\leq \cc^T\xx_0$ for every $\xx\in P(A,\bb)$.
 Sometimes we will only be interested in the set of feasible solutions, which does not depend on the objective vector.
 
 Assume without loss of generality that $\bb$ lies in the column space of $A$, and that the rows of $A$ are linearly independent.
-For a subset $B\subset \{1,\dotsc,n\}$, let $A_B$ denote the subatrix of $A$ consisting of columns from $B$.
+For a subset $B\subset [n]$, let $A_B$ denote the subatrix of $A$ consisting of columns from $B$.
 We say that $B$ is a \emph{basic set} if $B$ has $m$ elements and $A_B$ has rank $m$.
-For $\xx\in \RR_+^n$ define:
+For $\xx\in \RR^n$ define:
 \begin{displaymath}
   \supp(\xx)=\{1\leq j\leq n\mid x_j\neq 0\}.
 \end{displaymath}
@@ -91,30 +93,34 @@ Clearly, a feasible solution $\xx$ is basic if and only if the submatrix $A_{\su
 \end{example}
 \begin{lemma}
   \label{lemma:unique-for-B}
-  For each subset $B\subset [d]$ such that $A_B$ is non-singular, there exists at most one basic feasible solution with basic set $B$.
+  For each basic subset $B\subset [d]$, there exists at most one basic feasible solution $\xx$ with $\supp(\xx)\subset B$.
 \end{lemma}
 \begin{proof}
   Let $\xx_B$ denote the vector $(x_i)_{i\in B}$.
   The matrix $A_B$ is non-singular, so the equation $A_B\xx_B=\bb$ has at most one solution.
-  Now $\xx$ is a solution of $A\xx=\bb$ with basic set $B$ if and only if $A_B\xx_B=\bb$.
-  Therefore such $\xx$ is unique.
+  Solutions $\xx$ of $A\xx=\bb$ with $\supp(x)\subset B$ are in bijection with solutions of $A_B\xx_B=\bb$ (set $x_j=0$ for $j\notin B$ to get $\xx$ from $\xx_B$).
+  Therefore $A\xx=\bb$ also has at most one solution.
 \end{proof}
 \begin{remark}
-  The same basic feasible solution could be obtained from different sets of $B$ of basic variables.
+  The same basic feasible solution could be obtained from different basic sets.
   For example, each basic solution for \eqref{eq:birkhoff2} corresponds to two basic sets.
+  Also not every basic set $B$ admits a basic feasible solution.
+  For example, in Example~\ref{example:birkhoff}, $B=\{(1,1),(1,2),(1,3),(2,1),(3,1)\}$ is a basic set with no feasible solution.
 \end{remark}
 \begin{theorem}
-  [Existence of basic solution]
+  [Existence of basic optimal solutions]
   \label{theorem:existence-of-basic-solutions}
   For a linear program in equational form:
   \begin{displaymath}
     \text{maximize $\cc^t\xx$ subject to $A\xx=\bb$, $\xx\geq 0$}
   \end{displaymath}
-  if there is at least one optimal solution, and the objective function is bounded above on the feasible set, then there exists at least one optimal solution, and among the optimal solutions there is at least one basic solution.
+  if there is at least one feasible solution, and the objective function is bounded above on $P(A,\bb)$, then there exists at least one optimal solution.
+  Among the optimal solutions there is at least one basic solution.
 \end{theorem}
 \begin{proof}
-  We claim that, for any feasible solution $\xx_0$ there exists a basic feasible solution $\xx$ with $\cc^T\xx\geq \cc^T\xx_0$.
-  Suppose $\xx$ is a basic feasible solution.
+  We claim that, for any feasible solution $\xx_0$, there exists a basic feasible solution $\xx$ with $\cc^T\xx\geq \cc^T\xx_0$.
+  This implies that an optimal solution, if it exists, will be basic.
+  Suppose $\xx$ is a feasible solution.
   Among all feasible solutions $\xx$ with $\cc^T\xx\geq \cc^T\xx_0$ choose one with support of minimal cardinality and call it $\tilde \xx$.
   If $A_{\supp(\tilde \xx)}$ is non-singular then $\tilde \xx$ is basic and we are done.
   Otherwise, there exists a vector $\yy\in \RR^n$ with $\supp(\yy)\subset \supp(\xx)$ such that $A\yy=0$.
@@ -126,8 +132,11 @@ Clearly, a feasible solution $\xx$ is basic if and only if the submatrix $A_{\su
   If $\cc^T\yy>0$ and all coordinates of $\yy$ are positive, then $\tilde\xx+t\yy$ is a feasible solution for all $t>0$.
   The objective function $\cc^T(\tilde\xx+t\yy)$ grows unboundedly as $t$ grows, contradicting its boundedness.
 
-  Since $\yy$ has at least one negative coordinate, it is possible to choose a value $t>0$ such that $\supp(\tilde\xx+t\yy)$ is strictly smaller than $\supp(\tilde\xx)$.
+  Thus $\yy$ has at least one negative coordinate, hence it is possible to choose a value $t>0$ such that $\tilde\xx+t\yy$ is a feasible solution with $\cc^T(\tilde\xx+t\yy)\geq \cc^T\tilde\xx$ and $\supp(\tilde\xx+t\yy)$ is strictly smaller than $\supp(\tilde\xx)$.
   This contradicts the minimality condition on the cardinality of $\supp(\tilde\xx)$.
+
+  The set of basic feasible solutions is finite.
+  The element of this set that maximizes the objective function must therefore be an optimal solution.
 \end{proof}
 \begin{definition}
   [Vertex]
@@ -138,11 +147,111 @@ Clearly, a feasible solution $\xx$ is basic if and only if the submatrix $A_{\su
 Theorem~\ref{theorem:existence-of-basic-solutions} says that every vertex of $P(A,\bb)$ is a basic feasible solution.
 The converse is also true:
 \begin{theorem}
-  Every basic feasible solution to \eqref{eq:lp-problem} is a vertex of $P(A,\bb)$.
+  The basic feasible solutions to \eqref{eq:lp-problem} are precisely the vertices of $P(A,\bb)$.
 \end{theorem}
 \begin{proof}
-  Let $B\subset [n]$ be a basic subset $\vv$ be a basic feasible solution to \eqref{eq:lp-problem} with respect to $B$.
+  Let $B\subset [n]$ be a basic subset $\vv$ be the basic feasible solution to \eqref{eq:lp-problem} with respect to $B$.
   Define $\cc$ to be the vector with $c_j=0$ for $j\in B$, and $c_j=-1$ otherwise.
   Then $\cc^T\vv=0$, and by Lemma~\ref{lemma:unique-for-B}, $\cc^T\xx<0$ for every $\xx\in P$.
 \end{proof}
+\begin{definition}
+  [General form of a linear program]
+  A more general form of a linear program involves linear inequalities and equalities.
+  As before take $A$ to be an $m\times n$ matrix with real entries, $\bb\in \RR^m$, and $\cc\in \RR^n$.
+  A general linear program has the form:
+  \begin{equation}
+    \label{eq:general-lp}
+    \tag{GLP}
+    \text{optimize $\cc^T\xx$ subject to }a_{i1}x_1+\dotsb + a_{in}x_n\; R_i\; b_i \text{ for }i=1,\dotsc,m,
+  \end{equation}
+  where $R_i$ is one of the three symbols $\leq$, $\geq$, and $=$, and the word optimize is replaced by either maximize, or minimize.
+  A basic feasible solution is one that is defined by equalities in $n$ linearly independent constraints (which could be equality or inequality to begin with).
+\end{definition}
+\begin{example}
+  The cube can be defined by the inequalities:
+  \begin{displaymath}
+    0\leq x_i \leq 1, \text{ for } i=1,2,3.
+  \end{displaymath}
+  The inequality $x_i\leq 1$ can be turned into an equality by introducing \emph{slack variables} $y_i$, and writing:
+  \begin{displaymath}
+    x_i\geq 0,\;y_i\geq 0,\;x_i+y_i\leq 1 \text{ for }i=1,2,3.
+  \end{displaymath}
+  The linear program in equational form is equivalent to the original, more general one, in the sense that there is a bijection amongst their feasible solutions that maps vertices to vertices (why?).
+  What are the basic subsets? What are the basic feasible solutions?
+\end{example}
+\begin{exercise}
+  Rewrite the $n$-simplex:
+  \begin{displaymath}
+    \Delta_n = \{(x_1,\dotsc,x_n)\mid 0\leq x_1\leq x_2 \leq \dotsb x_n\leq 1\}
+  \end{displaymath}
+  in equational form.
+  Determine 
+\end{exercise}
+\begin{exercise}
+  Express the hyperoctahedron:
+  \begin{displaymath}
+    H_n = \{\xx\mid -1\leq x_1+\dotsb+x_n\leq 1\}
+  \end{displaymath}
+  in equational form.
+\end{exercise}
+
+\section{The Simplex Method}
+\label{sec:simplex-method}
+
+The simplex method begins with a basic set $B$ for which there exists a basic feasible solution.
+Using the relations imposed by $A\xx=\bb$, each of the variables $x_j$, where $j\notin B$, can be expressed in terms of the basic variables.
+The objective function can also be expressed in terms of the basic variables.
+Suppose that $B=\{j_1,\dotsc,j_m\}$ and $\bar B=\{k_1,\dotsc,k_{n-m}\}$ is the complement of $B$ in $[n]$.
+Then the system of equations $A\xx=\bb$ can be rearranged as:
+\begin{equation}
+  \label{eq:basic_from_nonbasic}
+  A_B\xx_B = \bb-A_{\bar B}\xx_{\bar B}.
+\end{equation}
+Since $A_B$ is invertible, the basic variables can be expressed in terms of the non-basic ones:
+\begin{displaymath}
+  \xx_B = A_B^{-1}(\bb-A_{\bar B}\xx_{\bar B}).
+\end{displaymath}
+Indeed, the basic feasible point is computed by setting $\xx_{\bar B}=0$ in the above equation.
+Since each basic variable is expressed in terms of the non-basic variables in \eqref{eq:basic_from_nonbasic}, the objective function can be expressed in terms of the non-basic variables only.
+
+This data is represented in terms of a \emph{simplex tableau}:
+\begin{equation}
+  \tag{T}
+  \label{eq:tableau}
+  \begin{matrix}
+    \xx_B & = & \mathbf d - D\xx_{\bar B}\\
+    \hline
+    \cc^T\xx & = & \mathbf e^T \xx_{\bar B}.
+  \end{matrix}
+\end{equation}
+There are $m$ equations above, one for each basic variable, expressing it as an affine linear combination of the basic variables.
+The last line of (\ref{eq:tableau}) is simply the objective function expresses in terms of the basic variables.
+\begin{example}
+  Consider the Birkhoff polytope (Example~\ref{example:birkhoff}) for $d=2$.
+  For conevnience we abbreviate the variable indices $(i,j)$ to $ij$.
+  The matrix $A$ has columns indexed by pairs in $[d]\times [d]$ written in increasing lexicographic order:
+  \begin{displaymath}
+    A =
+    \begin{pmatrix}
+      1 & 1 & 1 & 0 & 0 & 0 & 0 & 0 & 0\\
+      0 & 0 & 0 & 1 & 1 & 1 & 0 & 0 & 0\\
+      0 & 0 & 0 & 0 & 0 & 0 & 1 & 1 & 1\\
+      1 & 0 & 0 & 1 & 0 & 0 & 1 & 0 & 0\\
+      0 & 1 & 0 & 0 & 1 & 0 & 0 & 1 & 0\\
+    \end{pmatrix}
+  \end{displaymath}
+  Fix as objective function $x_{11}+x_{22}+x_{33}$.
+  A basic subset is $B=\{11,12,13,22,31\}$ with basic solution given by $x_{13}=x_{22}=x_{31}=1$, and all other coordinates zero.
+  The corresponding simplex tableau is:
+  \begin{displaymath}
+    \begin{matrix}
+      x_{21} & = & x_{11} -x_{12}+x_{22}\\
+      x_{23} & = & -x_{12}+x_{13}+x_{22}\\
+      x_{32} & = & x_{11} - x_{13} + x_{31}\\
+      x_{33} & = & x_{12} -x_{13}+x_{31}\\
+      \hline
+      \cc^T\xx & = & x_{11} + x_{12} - x_{13} + x_{22} + x_{31} 
+    \end{matrix}
+  \end{displaymath}
+\end{example}
 \end{document}
