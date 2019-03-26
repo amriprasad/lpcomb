@@ -80,16 +80,17 @@ Clearly, a feasible solution $\xx$ is basic if and only if the submatrix $A_{\su
   Every submatrix of $A$ with three columns is non-singular.
   Thus there are four possible basic sets, but only two basic solutions given by the $2\times 2$ permutation matrices.
 
-  In general, what are the possible basic sets and basic feasible solutions?
+  Let $B$ be a basic subset of $[d]\times [d]$.
+  By definition $B$ has cadrinality $2d-1$.
+  Given $B$, define a bipartite graph $\Gamma_B$ on the set $\{1,2,3,1',2',3'\}$ by joining $i$ to $j'$ if $(i,j)\in B$.
+  Show that $\Gamma_B$ is a spanning tree for the complete bipartite graph $K_{3,3}$.
+  Show that this construction gives rise to a bijection from the set of basic subsets of $[d]\times[d]$ onto the set of spanning trees of $K_{n,n}$.
+
   Let $\sigma\in S_d$ and suppose $\xx$ is the permutation matrix $x_{ij}=\delta_{i\sigma(i)}$.
   Then $\supp(\xx)=\{(i,\sigma_i)\mid i\in [d]\}$.
   The first $d$ rows of the corresponding column vectors of $A$ are just the coordinate vectors of $\RR^d$.
   Therefore each permutation matrix is a basic feasible solution.
-  What basic sets does it correspond to?
-  Can you show that there are no more basic feasible solutions?
-  
-  Given a subset $S$ of $[d]^2$, let $\cc=(c_{ij})$ be the array whose $(i,j)$th entry is $1$ if $(i,j)\in S$, and $0$ otherwise.
-  What is the correspondence between subsets $S\subset [d]^2$ and the basic feasible solutions that maximize the corresponding objective function?
+  What spanning trees does it correspond to?
 \end{example}
 \begin{lemma}
   \label{lemma:unique-for-B}
@@ -168,6 +169,18 @@ The converse is also true:
   A basic feasible solution is one that is defined by equalities in $n$ linearly independent constraints (which could be equality or inequality to begin with).
 \end{definition}
 \begin{example}
+  [Standard equational form of the simplex]
+  Consider the linear program in $n$ variables with just one linear equation:
+  \begin{displaymath}
+    \xx\geq 0;\; x_1+\dotsb+x_n=1.
+  \end{displaymath}
+  The matrix $A$ in this case has a single row, and rank one.
+  The polytope $P(A,1)$ is called the standard $(n-1)$-simplex.
+  Every singleton subset of $[n]$ is basic.
+  The basic solution corresponding to $B=\{j\}$ is the $i$th coordinate vector $e_j$.
+  Given an objective vector $\cc\in \RR^n$, the optimal solution is $e_j$ where $j$ is any of the indices for which $c_j$ is maximal among the coordinates of $\cc$.
+\end{example}
+\begin{example}
   The cube can be defined by the inequalities:
   \begin{displaymath}
     0\leq x_i \leq 1, \text{ for } i=1,2,3.
@@ -180,12 +193,13 @@ The converse is also true:
   What are the basic subsets? What are the basic feasible solutions?
 \end{example}
 \begin{exercise}
-  Rewrite the $n$-simplex:
+  [The simplex in terms of inequalities]
+  The $n$-simplex can also be expressed in terms of inequalities:
   \begin{displaymath}
-    \Delta_n = \{(x_1,\dotsc,x_n)\mid 0\leq x_1\leq x_2 \leq \dotsb x_n\leq 1\}
+    \Delta_n = \{(x_1,\dotsc,x_n)\mid 0\leq x_1\leq x_2 \leq \dotsb x_n\leq 1\}.
   \end{displaymath}
-  in equational form.
-  Determine 
+  Rewrite this in equational form.
+  Determine the basic sets and basic solutions.
 \end{exercise}
 \begin{exercise}
   Express the hyperoctahedron:
@@ -199,10 +213,11 @@ The converse is also true:
 \label{sec:simplex-method}
 
 The simplex method begins with a basic set $B$ for which there exists a basic feasible solution.
-Using the relations imposed by $A\xx=\bb$, each of the variables $x_j$, where $j\notin B$, can be expressed in terms of the basic variables.
-The objective function can also be expressed in terms of the basic variables.
-Suppose that $B=\{j_1,\dotsc,j_m\}$ and $\bar B=\{k_1,\dotsc,k_{n-m}\}$ is the complement of $B$ in $[n]$.
-Then the system of equations $A\xx=\bb$ can be rearranged as:
+Let $\bar B=[n]-B$, the complement of $B$ in $[n]$.
+Using the relations imposed by $A\xx=\bb$, each of the basic variables $x_j$, $j\in B$, can be expressed in terms of the non-basic variables $x_j$, $j\in \bar B$.
+Using this, the objective function can also be expressed in terms of the non-basic variables.
+
+To do this explicitly, note that the system of equations $A\xx=\bb$ can be rearranged as:
 \begin{equation}
   \label{eq:basic_from_nonbasic}
   A_B\xx_B = \bb-A_{\bar B}\xx_{\bar B}.
