@@ -1,4 +1,5 @@
 \documentclass{amsbook}
+\usepackage{amssymb,hyperref}
 \newcommand{\vv}{\mathbf v}
 \newcommand{\xx}{\mathbf x}
 \newcommand{\yy}{\mathbf y}
@@ -26,7 +27,7 @@
 \label{cha:intro-lp}
 \section{Feasibility and Optimization}
 \label{sec:feas-opt}
-A linear program in equational form consists of a set of variables, $\xx=(x_1,\dotsc,x_n)$, an $m\times n$ matrix with real entries $A$, a bound vector $\bb=(b_1,\dotsc,b_m)$, and an objective vector $\cc = (c_1,\dotsc,c_n)$.
+A \emph{linear program in equational form} consists of a set of variables $\xx=(x_1,\dotsc,x_n)$, an $m\times n$ matrix $A$ with real entries, a bound vector $\bb=(b_1,\dotsc,b_m)$, and an objective vector $\cc = (c_1,\dotsc,c_n)$.
 The \emph{linear program} is the problem:
 \begin{equation}
   \tag{LP}
@@ -58,14 +59,18 @@ Clearly, a feasible solution $\xx$ is basic if and only if the submatrix $A_{\su
   \label{example:birkhoff}
   Take $n=d^2$, indexing the $d^2$ variables as $\xx=(x_{ij})_{1\leq i,j\leq d}$, a square array of size $d$.
   As constraints, say that the row sums and column sums of $\xx$ are all equal to $1$, i.e.,
-  \begin{align*}
-    \sum_i x_{ij} &= 1 \text{ for } j=1,\dotsc,d\\
-    \sum_j x_{ij} &= 1 \text{ for } j=1,\dotsc,d.
-  \end{align*}
-  These $2d$ constraints are not independent--the sum of the row sum constaints is equal to the sum of the column sum constraints, which is the same as the constraint that all entries of the matrix add up to $d$.
-  Removing, say the last column constraint gives a $(2d-1)\times d^2$ matrix $A$ of rank $2d-1$.
+  \begin{align}
+    \tag{R}
+    \label{eq:row-sum-cons}
+    \sum_j x_{ij} &= 1 \text{ for } j=1,\dotsc,d,\\
+    \tag{C}
+    \label{eq:col-sum-cons}
+    \sum_i x_{ij} &= 1 \text{ for } j=1,\dotsc,d.
+  \end{align}
+  These $2d$ constraints are not independent--the sum of the row sum constraints \eqref{eq:row-sum-cons} is equal to the sum of the column sum constraints~\eqref{eq:col-sum-cons}; it is the constraint that all entries of the matrix add up to $d$.
+  Removing, for instance, the last column constraint gives a $(2d-1)\times d^2$ matrix $A$ of rank $2d-1$.
 
-  When $d=2$, the equation is:
+  When $d=2$, the constraints can be expressed in matrix form as
   \begin{equation}
     \label{eq:birkhoff2}
     \begin{pmatrix}
@@ -82,29 +87,50 @@ Clearly, a feasible solution $\xx$ is basic if and only if the submatrix $A_{\su
     \end{pmatrix}.
   \end{equation}
   Every submatrix of $A$ with three columns is non-singular.
-  Thus there are four possible basic sets, but only two basic solutions given by the $2\times 2$ permutation matrices.
-
-  Let $B$ be a basic subset of $[d]\times [d]$.
-  By definition $B$ has cadrinality $2d-1$.
-  Given $B$, define a bipartite graph $\Gamma_B$ on the set $\{1,2,3,1',2',3'\}$ by joining $i$ to $j'$ if $(i,j)\in B$.
-  Show that $\Gamma_B$ is a spanning tree for the complete bipartite graph $K_{3,3}$.
-  Show that this construction gives rise to a bijection from the set of basic subsets of $[d]\times[d]$ onto the set of spanning trees of $K_{n,n}$.
-
+  Thus there are four possible basic sets.
+  It is easy to see, however, that there are only two basic solutions, given by the permutation matrices:
+  \begin{displaymath}
+    \begin{pmatrix}
+      x_{11} & x_{12}\\
+      x_{21} & x_{22}
+    \end{pmatrix}
+    =
+    \begin{pmatrix}
+      1 & 0\\
+      0 & 1
+    \end{pmatrix}, \text{ or }
+    \begin{pmatrix}
+      x_{11} & x_{12}\\
+      x_{21} & x_{22}
+    \end{pmatrix}
+    =
+    \begin{pmatrix}
+      0 & 1\\
+      1 & 0
+    \end{pmatrix}.
+  \end{displaymath}
+  \begin{exercise}
+    Let $B$ be a basic subset of $[d]\times [d]$.
+    By definition, $B$ has cadrinality $2d-1$.
+    Given $B$, define a bipartite graph $\Gamma_B$ on the set $\{1,2,3,1',2',3'\}$ by joining $i$ to $j'$ if $(i,j)\in B$.
+    Show that $\Gamma_B$ is a spanning tree for the complete bipartite graph $K_{3,3}$.
+    Show that this construction gives rise to a bijection from the set of basic subsets of $[d]\times[d]$ onto the set of spanning trees of $K_{n,n}$.
+  \end{exercise}
   Let $\sigma\in S_d$ and suppose $\xx$ is the permutation matrix $x_{ij}=\delta_{i\sigma(i)}$.
   Then $\supp(\xx)=\{(i,\sigma_i)\mid i\in [d]\}$.
   The first $d$ rows of the corresponding column vectors of $A$ are just the coordinate vectors of $\RR^d$.
   Therefore each permutation matrix is a basic feasible solution.
-  What spanning trees does it correspond to?
+  Which spanning trees does it correspond to?
 \end{example}
 \begin{lemma}
   \label{lemma:unique-for-B}
   For each basic subset $B\subset [d]$, there exists at most one basic feasible solution $\xx$ with $\supp(\xx)\subset B$.
 \end{lemma}
-In the situation described in the preceding lemma, we say that \emph{$B$ is the basic solution corresponding to $B$}.
+In the situation described in the preceding lemma, we say that \emph{$\xx$ is the basic solution corresponding to $B$}.
 \begin{proof}
   Let $\xx_B$ denote the vector $(x_i)_{i\in B}$.
   The matrix $A_B$ is non-singular, so the equation $A_B\xx_B=\bb$ has at most one solution.
-  Solutions $\xx$ of $A\xx=\bb$ with $\supp(x)\subset B$ are in bijection with solutions of $A_B\xx_B=\bb$ (set $x_j=0$ for $j\notin B$ to get $\xx$ from $\xx_B$).
+  Solutions $\xx$ of $A\xx=\bb$ with $\supp(\xx)\subset B$ are in bijection with solutions of $A_B\xx_B=\bb$ (set $x_j=0$ for $j\notin B$ to get $\xx$ from $\xx_B$).
   Therefore $A\xx=\bb$ also has at most one solution.
 \end{proof}
 \begin{remark}
@@ -128,8 +154,10 @@ In the situation described in the preceding lemma, we say that \emph{$B$ is the 
   This implies that an optimal solution, if it exists, will be basic.
   Suppose $\xx$ is a feasible solution.
   Among all feasible solutions $\xx$ with $\cc^T\xx\geq \cc^T\xx_0$ choose one with support of minimal cardinality and call it $\tilde \xx$.
-  If $A_{\supp(\tilde \xx)}$ is non-singular then $\tilde \xx$ is basic and we are done.
-  Otherwise, there exists a vector $\yy\in \RR^n$ with $\supp(\yy)\subset \supp(\xx)$ such that $A\yy=0$.
+  We will show that $A_{\supp(\tilde\xx)}$ has linearly independent columns, so that $\tilde\xx$ is basic.
+  
+  Suppose this is not the case.
+  Then there exists a vector $\yy\in \RR^n$ with $\supp(\yy)\subset \supp(\xx)$ such that $A\yy=0$.
   Replacing $\yy$ by $-\yy$ if necessary, assume that $\cc^T\yy\geq 0$.
 
   We claim that we may further assume that $\yy$ has at least one \emph{negative} coordinate.
@@ -138,7 +166,8 @@ In the situation described in the preceding lemma, we say that \emph{$B$ is the 
   If $\cc^T\yy>0$ and all coordinates of $\yy$ are positive, then $\tilde\xx+t\yy$ is a feasible solution for all $t>0$.
   The objective function $\cc^T(\tilde\xx+t\yy)$ grows unboundedly as $t$ grows, contradicting its boundedness.
 
-  Thus $\yy$ has at least one negative coordinate, hence it is possible to choose a value $t>0$ such that $\tilde\xx+t\yy$ is a feasible solution with $\cc^T(\tilde\xx+t\yy)\geq \cc^T\tilde\xx$ and $\supp(\tilde\xx+t\yy)$ is strictly smaller than $\supp(\tilde\xx)$.
+  Thus $\yy$ has at least one negative coordinate, hence it is possible to choose a value $t>0$ such that $\tilde\xx+t\yy$ is a feasible solution with $\supp(\tilde\xx+t\yy)\subsetneqq \supp(\tilde\xx)$.
+  Since $\cc^T\yy\geq 0$, we have $\cc^T(\tilde\xx+t\yy)\geq \cc^T\tilde\xx$ and $\supp(\tilde\xx+t\yy)$.
   This contradicts the minimality condition on the cardinality of $\supp(\tilde\xx)$.
 
   The set of basic feasible solutions is finite.
@@ -148,7 +177,7 @@ In the situation described in the preceding lemma, we say that \emph{$B$ is the 
   [Vertex]
   \label{definition:vertex}
   Let $P\subset \RR^n$ be convex closed set.
-  An element $\vv\in P$ is said to be a \emph{vertex} of $P$ if there exists $\cc\in \RR^n$ such that $\cc^T\xx$ attains its maximum uniquely at $\vv$.
+  An element $\vv\in P$ is said to be a \emph{vertex} of $P$ if there exists $\cc\in \RR^n$ such that $\cc^T\xx$ attains its maximum \emph{uniquely} at $\vv$.
 \end{definition}
 Theorem~\ref{theorem:existence-of-basic-solutions} says that every vertex of $P(A,\bb)$ is a basic feasible solution.
 The converse is also true:
@@ -157,8 +186,8 @@ The converse is also true:
 \end{theorem}
 \begin{proof}
   Let $B\subset [n]$ be a basic subset $\vv$ be the basic feasible solution to \eqref{eq:lp-problem} with respect to $B$.
-  Define $\cc$ to be the vector with $c_j=0$ for $j\in B$, and $c_j=-1$ otherwise.
-  Then $\cc^T\vv=0$, and by Lemma~\ref{lemma:unique-for-B}, $\cc^T\xx<0$ for every $\xx\in P$.
+  Define $\cc$ to be the vector with $c_j=0$ for $j\in B$, and $c_j=-1$ (or any strictly negative number) otherwise.
+  Then $\cc^T\vv=0$, and by Lemma~\ref{lemma:unique-for-B}, $\cc^T\xx<0$ for every $\xx\in P(A,\bb)$ different from $\xx_0$.
 \end{proof}
 \begin{definition}
   [General form of a linear program]
@@ -227,12 +256,13 @@ To do this explicitly, note that the system of equations $A\xx=\bb$ can be rearr
   \label{eq:basic_from_nonbasic}
   A_B\xx_B = \bb-A_{\bar B}\xx_{\bar B}.
 \end{equation}
+Here $\xx_B\in\RR^m$ and $\xx_{\bar B}\in\RR^{m-n}$ are vectors whose coordinates are those coordinates of $\xx$ whose indices lie in $B$ and $\bar B$ respectively. 
 Since $A_B$ is invertible, the basic variables can be expressed in terms of the non-basic ones:
 \begin{displaymath}
   \xx_B = A_B^{-1}(\bb-A_{\bar B}\xx_{\bar B}).
 \end{displaymath}
 Indeed, the basic feasible solution is computed by setting $\xx_{\bar B}=0$ in the above equation.
-If $A_B^{-1}b\geq 0$, then it is the basic feasible solution corresponding to $B$.
+If $A_B^{-1}\bb\geq 0$, then it is the basic feasible solution corresponding to $B$.
 Othewise there is no basic feasible solution corresponding to $B$.
 Since each basic variable is expressed in terms of the non-basic variables in \eqref{eq:basic_from_nonbasic}, the objective function can be expressed in terms of the non-basic variables only:
 \begin{displaymath}
@@ -256,7 +286,7 @@ Here:
   e & = \cc_B^T \mathbf d\\
   \mathbf e^T & = \cc_B^TD - \cc_{\bar B}^T.
 \end{align*}
-There are $m$ equations above, one for each basic variable, expressing it as an affine linear combination of the basic variables.
+There are $m$ equations in \eqref{eq:tableau}, one for each basic variable, expressing it as an affine linear combination of the basic variables.
 The last line of (\ref{eq:tableau}) is simply the objective function expressed in terms of the basic variables.
 The information contained in \eqref{eq:tableau} is equivalent to the information in \eqref{eq:lp-problem}.
 But \eqref{eq:tableau} gives a sort-of parametrization of $P(A,b)$.
@@ -269,6 +299,9 @@ But \eqref{eq:tableau} gives a sort-of parametrization of $P(A,b)$.
     P(A,\bb) = \{\xx\in \RR^n\mid \xx\geq 0,\; \xx_B=A_B^{-1}(\bb-A_{\bar B}\xx_{\bar B}),\;\xx_{\bar B}\geq 0\}.
   \end{equation}
 \end{theorem}
+\begin{proof}
+  The conditions $A\xx=\bb$ and $\xx_B=A_B^{-1}(\bb-A_{\bar\xx}x_{\bar B})$ are equivalent.
+\end{proof}
 \begin{example}
   \label{example:birkhoof2-tableau}
   Consider the Birkhoff polytope (Example~\ref{example:birkhoff}) for $d=3$.
@@ -298,7 +331,7 @@ But \eqref{eq:tableau} gives a sort-of parametrization of $P(A,b)$.
       \cc^T\xx & = & 1-2x_{21}-x_{23}+x_{32}+2x_{33}.
     \end{matrix}
   \end{displaymath}
-  In the above example, the objective function can be increased by increasing $x_{32}$ or $x_{33}$.
+  In the above example, the objective function can be increased by increasing $x_{32}$ or $x_{33}$, the variables with positive coefficients in the last row of the tableau.
   However, this increase should respect the constraints that all the variables are non-negative.
   The condition $x_{12}\geq 0$ (using the second equation, and leaving the values of $x_{21}$ and $x_{23}$ unchanged at $0$) gives $x_{32}\leq 0$.
   Therefore, it is not feasible to increase $x_{32}$.
@@ -344,7 +377,8 @@ But \eqref{eq:tableau} gives a sort-of parametrization of $P(A,b)$.
       \cc^T\xx & = & 3-2x_{13}-x_{21}-2x_{23}-x_{12}.
     \end{matrix}
   \end{displaymath}
-  In this case, all the coefficients of the objective function are negative, from which it immediately follows that $x_{ij}=\delta_{ij}$ is the unique global maximum.
+  In this case, all the coefficients of the objective function are negative.
+  Theorem~\eqref{equation:tableau-par} then implies that $x_{ij}=\delta_{ij}$ is the unique global maximum.
 \end{example}
 
 \end{document}
