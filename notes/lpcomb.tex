@@ -33,13 +33,17 @@ The \emph{linear program} is the problem:
   \label{eq:lp-problem}
   \text{maximize $\cc^T\xx$ subject to $\xx\geq 0$ and $A\xx=\bb$}.
 \end{equation}
-The set $P=P(A,\bb)$ of all vectors satisfying $\xx\geq 0$ and $A\xx=\bb$ is called the polytope of all \emph{feasible solutions}.
+The set
+\begin{displaymath}
+  P(A,\bb) = \{\xx\in \RR^n\mid \xx\geq 0,\;A\xx=\bb\}
+\end{displaymath}
+is called the polytope of all \emph{feasible solutions} to \eqref{eq:lp-problem}.
 The function $\xx\mapsto \cc^T\xx$ is called the \emph{objective function}.
 An \emph{optimal solution} is a vector $\xx_0\in P(A,\bb)$ such that $\cc^T\xx\leq \cc^T\xx_0$ for every $\xx\in P(A,\bb)$.
-Sometimes we will only be interested in the set of feasible solutions, which does not depend on the objective vector.
+Sometimes we will only be interested in the set $P(A,\bb)$ of feasible solutions, which does not depend on the objective vector.
 
-Assume without loss of generality that $\bb$ lies in the column space of $A$, and that the rows of $A$ are linearly independent.
-For a subset $B\subset [n]$, let $A_B$ denote the subatrix of $A$ consisting of columns from $B$.
+Assume that $\bb$ lies in the column space of $A$ (for otherwise, we would have $P(A,\bb)=\emptyset$), and that the rows of $A$ are linearly independent (if not, we could discard redundant rows to achieve this).
+For a subset $B\subset [n]$, let $A_B$ denote the submatrix of $A$ consisting of columns from $B$.
 We say that $B$ is a \emph{basic set} if $B$ has $m$ elements and $A_B$ has rank $m$.
 For $\xx\in \RR^n$ define:
 \begin{displaymath}
@@ -96,6 +100,7 @@ Clearly, a feasible solution $\xx$ is basic if and only if the submatrix $A_{\su
   \label{lemma:unique-for-B}
   For each basic subset $B\subset [d]$, there exists at most one basic feasible solution $\xx$ with $\supp(\xx)\subset B$.
 \end{lemma}
+In the situation described in the preceding lemma, we say that \emph{$B$ is the basic solution corresponding to $B$}.
 \begin{proof}
   Let $\xx_B$ denote the vector $(x_i)_{i\in B}$.
   The matrix $A_B$ is non-singular, so the equation $A_B\xx_B=\bb$ has at most one solution.
@@ -226,8 +231,13 @@ Since $A_B$ is invertible, the basic variables can be expressed in terms of the 
 \begin{displaymath}
   \xx_B = A_B^{-1}(\bb-A_{\bar B}\xx_{\bar B}).
 \end{displaymath}
-Indeed, the basic feasible point is computed by setting $\xx_{\bar B}=0$ in the above equation.
-Since each basic variable is expressed in terms of the non-basic variables in \eqref{eq:basic_from_nonbasic}, the objective function can be expressed in terms of the non-basic variables only.
+Indeed, the basic feasible solution is computed by setting $\xx_{\bar B}=0$ in the above equation.
+If $A_B^{-1}b\geq 0$, then it is the basic feasible solution corresponding to $B$.
+Othewise there is no basic feasible solution corresponding to $B$.
+Since each basic variable is expressed in terms of the non-basic variables in \eqref{eq:basic_from_nonbasic}, the objective function can be expressed in terms of the non-basic variables only:
+\begin{displaymath}
+  \cc^T\xx = \cc_B^T\xx_B + \cc_{\bar B}^T\xx_{\bar B} = \cc^T_BA_B^{-1}(\bb-A_{\bar B}\xx_{\bar B}) + \cc^T_{\bar B}\xx_{\bar B}.
+\end{displaymath}
 
 This data is represented in terms of a \emph{simplex tableau}:
 \begin{equation}
@@ -250,11 +260,15 @@ There are $m$ equations above, one for each basic variable, expressing it as an 
 The last line of (\ref{eq:tableau}) is simply the objective function expressed in terms of the basic variables.
 The information contained in \eqref{eq:tableau} is equivalent to the information in \eqref{eq:lp-problem}.
 But \eqref{eq:tableau} gives a sort-of parametrization of $P(A,b)$.
-Note that $\xx$ is determined by $\xx_B$ and $\xx_{\bar B}$. We have:
-\begin{quote}
-  Each vector $\xx\in P(A,b)$ corresponds to a unique vector $\xx_{\bar B}\in \RR_{\geq 0}^{n-m}$ with $\xx_B$ computed by using \eqref{eq:tableau} is non-negative.
-  Under this correspondence the basic feasible solution corresponding to $B$ (if it exists) comes from $\xx_{\bar B}=0$.
-\end{quote}
+\begin{theorem}
+  \label{theorem:basic-parametrization}
+  For every basic subset $B\subset [n]$ in the linear program \eqref{eq:lp-problem},
+  \begin{equation}
+    \tag{$*$}
+    \label{equation:tableau-par}
+    P(A,\bb) = \{\xx\in \RR^n\mid \xx\geq 0,\; \xx_B=A_B^{-1}(\bb-A_{\bar B}\xx_{\bar B}),\;\xx_{\bar B}\geq 0\}.
+  \end{equation}
+\end{theorem}
 \begin{example}
   \label{example:birkhoof2-tableau}
   Consider the Birkhoff polytope (Example~\ref{example:birkhoff}) for $d=3$.
@@ -308,9 +322,9 @@ Note that $\xx$ is determined by $\xx_B$ and $\xx_{\bar B}$. We have:
     \end{matrix}
   \end{displaymath}
   All the non-basic variables have negative coefficients, except $x_{32}$.
-  However, the constrain $x_{12}\geq 0$ still does not allow us to increase $x_{32}$ without changing any other non-basic variable.
+  However, the constraint $x_{12}\geq 0$ still does not allow us to increase $x_{32}$ without changing any other non-basic variable.
   This suggests that we may have arrived at a maximum value for the objective function.
-  Indeed, $x_{12}=x_{21}+x_{23}-x_{32}\geq 0$ implies that $x_{32}\leq x_{21}+x_{23}$, whene
+  Indeed, $x_{12}=x_{21}+x_{23}-x_{32}\geq 0$ implies that $x_{32}\leq x_{21}+x_{23}$ for every $\xx\in P(A,\bb)$, whence
   \begin{displaymath}
     \cc^T\xx=3-2x_{13}-2x_{21}-3x_{23}+x_{32}\leq 3-2x_{13}-x_{21}-2x_{23}\leq 3.
   \end{displaymath}
