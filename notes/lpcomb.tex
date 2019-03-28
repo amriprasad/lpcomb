@@ -243,7 +243,7 @@ The converse is also true:
   in equational form.
 \end{exercise}
 
-\section{The Simplex Method}
+\section{Simplex Tableaus}
 \label{sec:simplex-method}
 
 The simplex method begins with a basic set $B$ for which there exists a basic feasible solution.
@@ -269,16 +269,17 @@ Since each basic variable is expressed in terms of the non-basic variables in \e
   \cc^T\xx = \cc_B^T\xx_B + \cc_{\bar B}^T\xx_{\bar B} = \cc^T_BA_B^{-1}(\bb-A_{\bar B}\xx_{\bar B}) + \cc^T_{\bar B}\xx_{\bar B}.
 \end{displaymath}
 
-This data is represented in terms of a \emph{simplex tableau}:
+Thus \eqref{eq:lp-problem} is represented in terms of a \emph{simplex tableau}:
 \begin{equation}
   \tag{T}
   \label{eq:tableau}
   \begin{matrix}
     \xx_B & = & \mathbf d - D\xx_{\bar B}\\
     \hline
-    \cc^T\xx & = & e - \mathbf e^T \xx_{\bar B}.
+    \cc^T\xx & = & e - \mathbf e^T \xx_{\bar B},
   \end{matrix}
 \end{equation}
+the equations above the line being the constraints, and the objective function $\cc^T\xx$ below the line to be maximized.
 Here:
 \begin{align*}
   \mathbf d & = A_B^{-1}\bb\\
@@ -286,24 +287,26 @@ Here:
   e & = \cc_B^T \mathbf d\\
   \mathbf e^T & = \cc_B^TD - \cc_{\bar B}^T.
 \end{align*}
-There are $m$ equations in \eqref{eq:tableau}, one for each basic variable, expressing it as an affine linear combination of the basic variables.
-The last line of (\ref{eq:tableau}) is simply the objective function expressed in terms of the basic variables.
 The information contained in \eqref{eq:tableau} is equivalent to the information in \eqref{eq:lp-problem}.
-But \eqref{eq:tableau} gives a sort-of parametrization of $P(A,b)$.
+But \eqref{eq:tableau} gives a parametrization of $P(A,b)$ in terms of a subset of $\RR^{n-m}$.
 \begin{theorem}
   \label{theorem:basic-parametrization}
   For every basic subset $B\subset [n]$ in the linear program \eqref{eq:lp-problem},
   \begin{equation}
     \tag{$*$}
     \label{equation:tableau-par}
-    P(A,\bb) = \{\xx\in \RR^n\mid \xx\geq 0,\; \xx_B=A_B^{-1}(\bb-A_{\bar B}\xx_{\bar B}),\;\xx_{\bar B}\geq 0\}.
+    P(A,\bb) = \{\xx\in \RR^n\mid \xx_B=A_B^{-1}(\bb-A_{\bar B}\xx_{\bar B})\geq 0,\;\xx_{\bar B}\geq 0\}.
   \end{equation}
+  In other words, \eqref{eq:tableau} gives a parametrization of $P(A,\bb)$ in terms of the polytope:
+  \begin{displaymath}
+    P_B(A,\bb) = \{\xx_{\bar B}\in \RR_{\geq 0}^{n-m}\mid A_B^{-1}(\bb-A_{\bar B}\xx_{\bar B})\geq 0\}\subset \RR^{n-m}.
+  \end{displaymath}
 \end{theorem}
 \begin{proof}
   The conditions $A\xx=\bb$ and $\xx_B=A_B^{-1}(\bb-A_{\bar\xx}x_{\bar B})$ are equivalent.
 \end{proof}
 \begin{example}
-  \label{example:birkhoof2-tableau}
+  \label{example:birkhoff3-tableau}
   Consider the Birkhoff polytope (Example~\ref{example:birkhoff}) for $d=3$.
   For convenience we abbreviate the variable indices $(i,j)$ to $ij$.
   The matrix $A$ has columns indexed by pairs in $[d]\times [d]$ written in increasing lexicographic order:
@@ -377,8 +380,66 @@ But \eqref{eq:tableau} gives a sort-of parametrization of $P(A,b)$.
       \cc^T\xx & = & 3-2x_{13}-x_{21}-2x_{23}-x_{12}.
     \end{matrix}
   \end{displaymath}
-  In this case, all the coefficients of the objective function are negative.
-  Theorem~\eqref{equation:tableau-par} then implies that $x_{ij}=\delta_{ij}$ is the unique global maximum.
+  In this case, all the coefficients of the objective function, when expressed in terms of non-basic variables, are negative.
+  Theorem~\ref{theorem:basic-parametrization} then implies that $x_{ij}=\delta_{ij}$ is the unique global maximum.
 \end{example}
+More generally Theorem~\ref{theorem:basic-parametrization} gives:
+\begin{theorem}
+  Let $B$ be a basic set for \eqref{eq:lp-problem}.
+  Suppose that the objective function, when expressed in terms of the non-basic variables as in the last line of the tableau \eqref{eq:tableau} has all coefficients negative.
+  Then the basic feasible solution $\xx_0$ corresponding to $B$ is a solution to \eqref{eq:lp-problem}.
+  If all the non-basic variables occur with strictly negative coefficients, then $\xx_0$ is the unique solution to \eqref{eq:lp-problem}.
+\end{theorem}
 
+\section{Pivot Rules}
+\label{sec:pivot-rules}
+
+Given a basic subset $B$ for the linear program \eqref{eq:lp-problem}, consider the corresponding tableau \eqref{eq:tableau}.
+Assume also that $B$ admits a basic feasible solution $\xx$.
+Suppose that $e_k>0$ for some $k\in \bar B$.
+For each $i$ in $B$, we have:
+\begin{equation}
+  \label{eq:bound-i}
+  x_i = d_i - \sum_{j\in \bar B} D_{ij}x_j.
+\end{equation}
+The constraint $x_i\geq 0$ can be rewritten as:
+\begin{displaymath}
+  D_{ik}x_k \leq d_i - \sum_{j\in \bar B,\;j\neq k} D_{ij}x_j.
+\end{displaymath}
+Since $B$ admits a basic feasible solution where all the basic variables are zero, we have $d_i\geq 0$.
+If $D_{ik}\leq 0$, then $x_k$ can be increased without bound without violating \eqref{eq:bound-i}.
+If, on the other hand, $D_{ik}>0$, then $x_k$ can be increased up to $d_i/D_{ik}$.
+Therefore, we can increase $x_k$ up to $m=\min\{d_i/D_{ik}\mid i\in B\}$.
+In general $m\geq 0$, and it is quite possible (as we have seen in Example~\ref{example:birkhoff3-tableau}) that $m=0$.
+Let $l$ be any index for which $m=d_l/D_{il}$.
+Let $B'=B\cup\{k\}-\{l\}$.
+
+We have an expression for $x_k$ in terms of the variables $\{x_j\mid j\in \bar B'\}$:
+\begin{equation}
+  \label{eq:pivot-sub}
+  x_k = D_{lk}^{-1}(d_l-x_l-\sum_{j\in \bar B\;j\neq k} D_{lj}x_j).
+\end{equation}
+This can be substituted into the equations \eqref{eq:bound-i} for all $i\in B-\{l\}$ to write $x_i$ in terms of the variables $\{x_j\mid j\in \bar B'\}$.
+Thus each variable $x_i$, for $i\in B'$ can be expressed in terms of the variables $\{x_j\mid j\in \bar B'\}$.
+Also, the substitution \eqref{eq:pivot-sub} can be used to express the objective function in terms of the variables $\{x_j\mid j\in \bar B'\}$.
+Let $\xx'$ be the vector obtained from $\xx$ by changing $x_k$ to $m$, and $x_l$ to $0$.
+\begin{lemma}
+  If $B$ is a basic subset with basic feasible vector $\xx$ and $B'$ and $\xx'$ are obtained from $B$ and $\xx$ as described above, then $B'$ is also a basic subset, and $\xx'$ is a basic feasible solution corresponding to $B'$.
+\end{lemma}
+\begin{proof}
+  Since $B$ is a basic subset, the analysis at the beginning of Section~\ref{sec:simplex-method} shows that the equations:
+  \begin{displaymath}
+    A\xx=\bb \text{ and } \xx_B = \mathbf d - D\bar \xx_{\bar B} 
+  \end{displaymath}
+  are equivalent.
+  Our choices of $k$ and $l$ above ensure that these equations are further equivalent to
+  \begin{displaymath}
+    \xx_{B'} = \mathbf d' - D'\bar \xx_{\bar B'},
+  \end{displaymath}
+  for some vector $\mathbf d'$ and some matrix $D'$.
+  Setting $\xx_{\bar B'}=0$ says that there is a unique value for $\xx_{B'}$ such that, if $\xx''\in \RR^n$ is obtained from $\xx_{B'}$ by setting the coordinates in $\bar B'$ to $0$, then $A\xx''=\bb$.
+  In other words, $A_{B'}\xx_{B'}=\bb$ has a unique solution.
+  It follows that $A_{B'}$ is non-singular, and so $B'$ basic.
+  By Lemma~\ref{lemma:unique-for-B}, the vector $\xx''$ constructed in this proof coincides with the vector $\xx'$ constructed earlier, so the rest of the lemma also follows.
+\end{proof}
 \end{document}
