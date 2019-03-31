@@ -5,8 +5,10 @@
 \newcommand{\yy}{\mathbf y}
 \newcommand{\cc}{\mathbf c}
 \newcommand{\bb}{\mathbf b}
+\renewcommand{\aa}{\mathbf a}
 \newcommand{\supp}{\mathrm{supp}}
 \newcommand{\RR}{\mathbf R}
+\newcommand{\MM}{\mathbf M}
 \newtheorem{theorem}{Theorem}[section]
 \newtheorem{lemma}[theorem]{Lemma}
 \theoremstyle{definition}
@@ -25,6 +27,7 @@
 \maketitle
 \chapter{Introduction to Linear Programming}
 \label{cha:intro-lp}
+An excellent reference for the material in this section is the book of G\"artnet and Matousek \cite{GM}.
 \section{Feasibility and Optimization}
 \label{sec:feas-opt}
 A \emph{linear program in equational form} consists of a set of variables $\xx=(x_1,\dotsc,x_n)$, an $m\times n$ matrix $A$ with real entries, a bound vector $\bb=(b_1,\dotsc,b_m)$, and an objective vector $\cc = (c_1,\dotsc,c_n)$.
@@ -55,22 +58,29 @@ For $\xx\in \RR^n$ define:
   A \emph{basic feasible solution} to \eqref{eq:lp-problem} is a feasible solution $\xx\in P(A,\bb)$ such that $\supp(\xx)$ is contained in a basic set.
 \end{definition}
 Clearly, a feasible solution $\xx$ is basic if and only if the submatrix $A_{\supp(\xx)}$ has linearly independent columns.
-\begin{example}[The Birkhoff polytope]
-  \label{example:birkhoff}
-  Take $n=d^2$, indexing the $d^2$ variables as $\xx=(x_{ij})_{1\leq i,j\leq d}$, a square array of size $d$.
-  As constraints, say that the row sums and column sums of $\xx$ are all equal to $1$, i.e.,
+\begin{example}[Transportation polytopes]
+  \label{example:transportation}
+  Take $n=rs$, indexing the $rs$ variables as $\xx=(x_{ij})_{1\leq i\leq r,1\leq j\leq s}$, a rectangular array with $r$ rows and $s$ columns.
+
+  Let $\aa\in \RR_{\geq 0}^r$, and $\bb\in \RR_{geq 0}^s$ be fixed vectors.
+  As constraints, say that the row sums and column sums of $\xx$ are specified by the vectors $\aa$ and $\bb$.
   \begin{align}
     \tag{R}
     \label{eq:row-sum-cons}
-    \sum_j x_{ij} &= 1 \text{ for } j=1,\dotsc,d,\\
+    \sum_j x_{ij} &= a_i \text{ for } i=1,\dotsc,r,\\
     \tag{C}
     \label{eq:col-sum-cons}
-    \sum_i x_{ij} &= 1 \text{ for } j=1,\dotsc,d.
+    \sum_i x_{ij} &= b_j \text{ for } j=1,\dotsc,s.
   \end{align}
-  These $2d$ constraints are not independent--the sum of the row sum constraints \eqref{eq:row-sum-cons} is equal to the sum of the column sum constraints~\eqref{eq:col-sum-cons}; it is the constraint that all entries of the matrix add up to $d$.
-  Removing, for instance, the last column constraint gives a $(2d-1)\times d^2$ matrix $A$ of rank $2d-1$.
+  These $r+s$ constraints are not independent--the left hand side of the sum of the row sum constraints \eqref{eq:row-sum-cons} is equal to the left hand side of the sum of the column sum constraints~\eqref{eq:col-sum-cons}, being a constraint on the sum of all entries of the matrix.
+  If $\sum a_i\neq \sum b_j$, then there are no feasible solutions of this program.
+  Thus we assume that the vectors $\aa$ and $\bb$ have equal sums.
+  Now, removing, for instance, the last column constraint gives an $(r+s-1)\times rs$ matrix $A$ of rank $r+s-1$, which is equivalent to the original system.
+  We will denote the resulting polytope of feasible solutions by $\MM_{\aa\bb}$.
+  This polytope is known as the \emph{transportation polytope with margins $(\aa,\bb)$}.
+  For an excellent survey on transportation polytopes, see \cite{DLK2014}.
 
-  When $d=2$, the constraints can be expressed in matrix form as
+  When $r=s=2$, the constraints can be expressed in matrix form as
   \begin{equation}
     \label{eq:birkhoff2}
     \begin{pmatrix}
@@ -83,12 +93,17 @@ Clearly, a feasible solution $\xx$ is basic if and only if the submatrix $A_{\su
     \end{pmatrix}
     =
     \begin{pmatrix}
-     1\\1\\1
+     a_1\\a_2\\b_1
     \end{pmatrix}.
   \end{equation}
   Every submatrix of $A$ with three columns is non-singular.
   Thus there are four possible basic sets.
-  It is easy to see, however, that there are only two basic solutions, given by the permutation matrices:
+\end{example}
+\begin{example}[Birkhoff polytopes]
+  \label{example:birkhoff}
+  When $r=s$ and $\aa=\bb=(1,\dotsc,1)$, then the resulting polytope is known as the $r$th \emph{Birkhoff polytope}.
+  Consider the case where $r=2$, so the constraints are given by \eqref{eq:birkhoff2} with $a_1=a_2=b_1=1$.
+  It is easy to see that there are only two basic solutions, given by the permutation matrices:
   \begin{displaymath}
     \begin{pmatrix}
       x_{11} & x_{12}\\
@@ -109,22 +124,26 @@ Clearly, a feasible solution $\xx$ is basic if and only if the submatrix $A_{\su
       1 & 0
     \end{pmatrix}.
   \end{displaymath}
-  \begin{exercise}
-    Let $B$ be a basic subset of $[d]\times [d]$.
-    By definition, $B$ has cadrinality $2d-1$.
-    Given $B$, define a bipartite graph $\Gamma_B$ on the set $\{1,2,3,1',2',3'\}$ by joining $i$ to $j'$ if $(i,j)\in B$.
-    Show that $\Gamma_B$ is a spanning tree for the complete bipartite graph $K_{3,3}$.
-    Show that this construction gives rise to a bijection from the set of basic subsets of $[d]\times[d]$ onto the set of spanning trees of $K_{n,n}$.
-  \end{exercise}
-  Let $\sigma\in S_d$ and suppose $\xx$ is the permutation matrix $x_{ij}=\delta_{i\sigma(i)}$.
-  Then $\supp(\xx)=\{(i,\sigma_i)\mid i\in [d]\}$.
-  The first $d$ rows of the corresponding column vectors of $A$ are just the coordinate vectors of $\RR^d$.
+  Each basic feasible solution corresponds to a two possible basic subsets.
+\end{example}
+\begin{exercise}
+  Let $B$ be a basic subset of $[r]\times [s]$ for the transportation polytope.
+  By definition, $B$ has cardinality $r+s-1$.
+  Given $B$, define a bipartite graph $\Gamma_B$ on the set $\{1,\dotsc,r\}\sqcup \{1',\dotsc,s'\}$ by joining $i$ to $j'$ if $(i,j)\in B$.
+  Show that $\Gamma_B$ is a spanning tree for the complete bipartite graph $K_{r,s}$.
+  Show that this construction gives rise to a bijection from the set of basic subsets of $[r]\times[s]$ onto the set of spanning trees of $K_{r,s}$.
+\end{exercise}
+\begin{exercise}
+  Consider the $r$th Birkhoff polytope, $\MM_{(1^r),(1^r)}$.
+  Let $\sigma\in S_r$ be a permutation and suppose $\xx$ is the permutation matrix $x_{ij}=\delta_{i\sigma(i)}$.
+  Then $\supp(\xx)=\{(i,\sigma_i)\mid i\in [r]\}$.
+  The first $r$ rows of the corresponding column vectors of $A$ are just the coordinate vectors of $\RR^r$.
   Therefore each permutation matrix is a basic feasible solution.
   Which spanning trees does it correspond to?
-\end{example}
+\end{exercise}
 \begin{lemma}
   \label{lemma:unique-for-B}
-  For each basic subset $B\subset [d]$, there exists at most one basic feasible solution $\xx$ with $\supp(\xx)\subset B$.
+  For each basic subset $B\subset [n]$ of \eqref{eq:lp-problem}, there exists at most one basic feasible solution $\xx$ with $\supp(\xx)\subset B$.
 \end{lemma}
 In the situation described in the preceding lemma, we say that \emph{$\xx$ is the basic solution corresponding to $B$}.
 \begin{proof}
@@ -135,9 +154,9 @@ In the situation described in the preceding lemma, we say that \emph{$\xx$ is th
 \end{proof}
 \begin{remark}
   The same basic feasible solution could be obtained from different basic sets.
-  For example, each basic solution for \eqref{eq:birkhoff2} corresponds to two basic sets.
+  For example, each basic solution for $r=2$ in Example~\ref{example:birkhoff} corresponds to two basic sets.
   Also not every basic set $B$ admits a basic feasible solution.
-  For example, in Example~\ref{example:birkhoff}, $B=\{(1,1),(1,2),(1,3),(2,1),(3,1)\}$ is a basic set with no feasible solution.
+  For example, for the $3$rd Birkhoff polytope, $B=\{(1,1),(1,2),(1,3),(2,1),(3,1)\}$ is a basic set with no feasible solution.
 \end{remark}
 \begin{theorem}
   [Existence of basic optimal solutions]
@@ -307,7 +326,7 @@ But \eqref{eq:tableau} gives a parametrization of $P(A,b)$ in terms of a subset 
 \end{proof}
 \begin{example}
   \label{example:birkhoff3-tableau}
-  Consider the Birkhoff polytope (Example~\ref{example:birkhoff}) for $d=3$.
+  Consider the Birkhoff polytope (Example~\ref{example:birkhoff}) for $r=3$.
   For convenience we abbreviate the variable indices $(i,j)$ to $ij$.
   The matrix $A$ has columns indexed by pairs in $[d]\times [d]$ written in increasing lexicographic order:
   \begin{displaymath}
@@ -385,8 +404,9 @@ But \eqref{eq:tableau} gives a parametrization of $P(A,b)$ in terms of a subset 
 \end{example}
 More generally Theorem~\ref{theorem:basic-parametrization} gives:
 \begin{theorem}
+  \label{theorem:pivot-basic}
   Let $B$ be a basic set for \eqref{eq:lp-problem}.
-  Suppose that the objective function, when expressed in terms of the non-basic variables as in the last line of the tableau \eqref{eq:tableau} has all coefficients negative.
+  Suppose that the objective function, when expressed in terms of the non-basic variables as in the last line of the tableau \eqref{eq:tableau} has all coefficients nonpositive.
   Then the basic feasible solution $\xx_0$ corresponding to $B$ is a solution to \eqref{eq:lp-problem}.
   If all the non-basic variables occur with strictly negative coefficients, then $\xx_0$ is the unique solution to \eqref{eq:lp-problem}.
 \end{theorem}
@@ -409,7 +429,7 @@ The constraint $x_i\geq 0$ can be rewritten as:
 Since $B$ admits a basic feasible solution where all the basic variables are zero, we have $d_i\geq 0$.
 If $D_{ik}\leq 0$, then $x_k$ can be increased without bound without violating \eqref{eq:bound-i}.
 If, on the other hand, $D_{ik}>0$, then $x_k$ can be increased up to $d_i/D_{ik}$.
-Therefore, we can increase $x_k$ up to $m=\min\{d_i/D_{ik}\mid i\in B\}$.
+Therefore, we can increase $x_k$ up to $m=\min\{d_i/D_{ik}\mid i\in B, D_{ik}>0\}$.
 In general $m\geq 0$, and it is quite possible (as we have seen in Example~\ref{example:birkhoff3-tableau}) that $m=0$.
 Let $l$ be any index for which $m=d_l/D_{il}$.
 Let $B'=B\cup\{k\}-\{l\}$.
@@ -442,4 +462,126 @@ Let $\xx'$ be the vector obtained from $\xx$ by changing $x_k$ to $m$, and $x_l$
   It follows that $A_{B'}$ is non-singular, and so $B'$ basic.
   By Lemma~\ref{lemma:unique-for-B}, the vector $\xx''$ constructed in this proof coincides with the vector $\xx'$ constructed earlier, so the rest of the lemma also follows.
 \end{proof}
+\begin{definition}
+  [Pivot step]
+  \label{definition:pivot}
+  Given a basic subset $B\subset[n]$ and the corresponding tableau \eqref{eq:tableau} for a linear program \eqref{eq:lp-problem}, a \emph{leaving variable} is any variable $x_k$ such that $k\in \bar B$, and $e_k>0$.
+  Let $m=\min\{d_i/D_{ik}\mid D_{ik}>0\}$.
+  Assume that $m<\infty$ (we will come to the case $m=\infty$ shortly).
+  An \emph{entering variable} is any variable $x_l$ such that $m=d_l/D_{lk}$.
+  A pivot step is a change of basic set $B\mapsto B':=B\cup\{x_l\}-\{x_k\}$, where $x_l$ is an entering variable and $x_k$ is a leaving variable.
+  By Theorem~\ref{theorem:pivot-basic}, $B'$ is again a basic subset for \eqref{eq:lp-problem}.
+  If $\xx$ is the basic feasible solution corresponding $B$, and $\xx'$ is the basic feasible solution corresponding to $B'$, then $\cc^T\xx'\geq \cc^T\xx$.
+\end{definition}
+In what situation is there no possible pivot step?
+The first possibility is that $e_k\leq 0$ for all $k\in \bar B$.
+Then Theorem~\ref{theorem:pivot-basic} tells us that the basic feasible solution corresponding to $B$ is maximizes the objective function of $P(A,\bb)$.
+Another possibility is that, for some $k\in\bar B$ such that $e_k>0$, $D_{ik}<0$ for all $i\in B$.
+Then, starting with the basic feasible solution corresponding to $B$, $x_k$ can be increased unboundedly without disturbing any of the other non-basic variables (which are set to $0$) without making any of the variable $x_i$, $i\in B$ negative.
+This shows that the objective function $\cc^T\xx$ is unbounded on $P(A,\bb)$.
+If neither of these cases occur, then a pivot step $B\mapsto B'$ is possible.
+However, it is quite possible that $m=0$ (this happened with the variable $x_{32}$ in Example~\ref{example:birkhoff3-tableau}).
+In this case the pivot step $B\mapsto B'$ happens, but $\xx'=\xx$.
+Of course, the value of the objective function remains unchanged.
+Also, $\supp(\xx)=\sup(\xx')\subset B\cap B'\subsetneq B$.
+\begin{definition}
+  [Degenerate basic subset]
+  A basic subset for \eqref{eq:lp-problem} is said to be \emph{degenerate} if it admits a basic feasible solution $\xx$ such that $\supp(\xx)\subsetneq B$.
+\end{definition}
+\begin{lemma}
+  Given an $m\times n$ matrix $A$, the set of constraint vectors $\bb\in \RR^n$ for which there exist degenerate basic subsets is a finite union of hyperplanes.
+\end{lemma}
+\begin{proof}
+  If $B\subset [n]$ is degenerate, then the vector $A_B^{-1}\bb$ lies in the union of coordinate hyperplanes.
+  In other words, $\bb$ lies in image under $A_B$ of a coordinate hyperplane, which, by the non-singularity of $A_B$, is a hyperplane.
+  Thus the set of constraint vectors $\bb$ for which there exists a degenerate basic subset is a finite union of a hyperplanes.
+\end{proof}
+Since a finite union of coordinate hyperplanes is a nowhere dense subset of $\RR^n$, it is very unlikely that degeneracy will occur in a real-world linear programming problem.
+Moreover, if it does occur, a small enough perturbation of $\bb$ will bring us back to the non-degenerate world while giving the correct basic subset whose basic feasible solution also optimizes the original problem.
+\begin{definition}[Non-degerate linear program]
+  We say that \eqref{eq:lp-problem} is non-degenerate if it admits no degenerate basic subset $B\subset[n]$.
+\end{definition}
+\begin{theorem}
+  Assume that \eqref{eq:lp-problem} is a non-degenerate linear program.
+  Starting with any basic set $B$, a finite number of pivot steps (Definition~\ref{definition:pivot}) will result in a basic set whose basic feasible solution is optimal, or else establish that the objective function is unbounded on $P(A,\bb)$.
+\end{theorem}
+\begin{proof}
+  Indeed, non-degeneracy ensures that the objective function increases strictly at each pivot step or $m=\infty$.
+  If $m=\infty$ at any pivot step, then the objective function is unbounded.
+  Otherwise, becuase the objective function increases strictly, no basic subset is ever repeated in a run of the algorithm.
+  Since there are only finitely many possible basic subsets, the algorithm must halt at an optimal solution.
+\end{proof}
+The number of basic subsets can grow exponentially with the number of variable.
+In an implementation of a linear programming algorithm a rule for choosing the leaving variable and the entering variable has to be specified.
+Such a rule is called a \emph{pivot rule}.
+For a discussion of commonly used pivot rules, their relative merits and demerits, the reader is referred to \cite[Section~5.7]{GM}.
+
+However, degeneracy is ubiquitous in combinatorial applications of linear programming.
+For example, \emph{every} basic subset for the $r$th Birkhoff polytope for every $r>1$ either does not admit a basic feasible solution, or is degenerate, since every vertex of the Birkhoff polytope is a permutation matrix.
+Moreover, the support of any permutation matrix has $r$ elements, but every basic subset has cardinality $2r-1$.
+\begin{example}
+  Consider the Birkhoff polytope for $r=3$ with objective function:
+  \begin{displaymath}
+    x_{12}+x_{13}+x_{21}+x_{23}+x_{31}+x_{32}.
+  \end{displaymath}
+  For $B=\{11,12,13,22,33\}$, the tableau is
+  \begin{displaymath}
+    \begin{matrix}
+      x_{11}&=&1-x_{21}-x_{31}\\
+      x_{12}&=&x_{21}+x_{23}-x_{32}\\
+      x_{13}&=&-x_{23}+x_{31}+x_{32}\\
+      x_{22}&=&1-x_{21}-x_{23}\\
+      x_{33}&=&1-x_{31}-x_{32}\\
+      \hline
+      \cc^T\xx&=&2x_{21}+x_{23}+2x_{31}+x_{32}.
+    \end{matrix}
+  \end{displaymath}
+  All four non-basic variables have positive coefficients in the objective function.
+  Using $x_{23}$ or $x_{32}$ as entering variables leads to pivots that do not increase the objective function.
+\end{example}
+
+The simplex method begins with a basic subset $B\subset [n]$ for \eqref{eq:lp-problem}.
+How does one find a basic subset to begin with?
+Indeed, the total number of subsets of $[n]$ is $2^n$, and finding a basic subset could be like finding a needle in a (albeit finite) haystack.
+The trick is to start with an infeasible point (usually $\xx=0$), quantify its ``infeasibility'' and then move to a feasible point (if it exists) by taking the negative of this infeasibility as an objective function.
+
+So, introduce variables $x_{n+1},\dotsc,x_{n+m}$, all constrained to take non-negative values.
+The variable $x_{n+i}$ will measure the feasibility gap in the $i$th equation:
+\begin{displaymath}
+  a_{i1}x_1+\dotsb+a_{in}x_n+\mathrm{sgn}(b_i)x_{n+i}=b_i,
+\end{displaymath}
+and then maximize $-x_{n+1}-x_{n+1}-\dotsb-x_{n+m}$.
+In other words, the auxilliary linear program has coefficient matrix $\tilde A = \begin{pmatrix}A & I_m\end{pmatrix}$ in block form, where $I_m$ denotes the $m\times m$ identity matrix.
+The bound vector $\bb$ remains unchanged.
+The objective vector is $(0,\dotsc,0,-1,\dotsc,-1)$ (with $n$ zeros and $m$ $-1$'s).
+In this case $B=\{n+1,\dotsc,n+m\}$ is clearly a basic subset with basic feasible solution $\tilde\xx=(0,\dotsc,0,|b_1|,\dotsc,|b_m|)$.
+The original program \eqref{eq:lp-problem} has a feasible solution if and only if the maximum value of the objective function is $0$.
+Thus locating a basic subset is itself a linear programming problem with an obvious basic subset.
+
+\section{Dealing with degeneracy}
+\label{sec:deal-with-degen}
+
+In the non-degenrate case, we saw that, with an sequence of arbitrarily chosen pivot moves, it is possible to go from any basic feasible solution to an  optimal one.
+In the degenerate case, it is quite possible that we end up repeating a cycle of pivot moves indefinitely.
+This can be avoided using \emph{Bland's rule} for choosing the leaving and entering variable.
+\begin{definition}
+  [Bland's rule]
+  Given a basic subset $B\subset [n]$ for \eqref{eq:lp-problem}, choose the incoming variable with minimum possible index, and among all the outgoing variables detrmined by this incoming variable, choose the one with minimum possible index.
+\end{definition}
+\begin{theorem}
+  With Bland's rule, starting with a given basic subset $B\subset [n]$ for \eqref{eq:lp-problem}, it is not possible to return to $B$ after a any number of pivot steps.
+\end{theorem}
+\begin{proof}
+  
+\end{proof}
+\section{Duality}
+\label{sec:duality}
+
+Given a linear program \eqref{eq:lp-problem}, choose any set of non-negative constants $y_1,\dotsc,y_m$, and consider the sum of the $m$ equations represented by $A\xx=\bb$ and add them up, weighted by the constants $y_1,\dotsc,y_m$.
+The result is a single linear equation in the variables $x_1,\dotsc,x_n$:
+\begin{displaymath}
+  \yy^TA\xx=\yy^T\bb.
+\end{displaymath}
+\bibliographystyle{abbrv}
+\bibliography{refs}
 \end{document}
