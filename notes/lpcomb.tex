@@ -468,7 +468,7 @@ Let $\xx'$ be the vector obtained from $\xx$ by changing $x_k$ to $m$, and $x_l$
   Given a basic subset $B\subset[n]$ and the corresponding tableau \eqref{eq:tableau} for a linear program \eqref{eq:lp-problem}, a \emph{leaving variable} is any variable $x_k$ such that $k\in \bar B$, and $e_k>0$.
   Let $m=\min\{d_i/D_{ik}\mid D_{ik}>0\}$.
   Assume that $m<\infty$ (we will come to the case $m=\infty$ shortly).
-  An \emph{entering variable} is any variable $x_l$ such that $m=d_l/D_{lk}$.
+  Having picked a leaving variable $x_k$, an \emph{entering variable} is any variable $x_l$ such that $m=d_l/D_{lk}$.
   A pivot step is a change of basic set $B\mapsto B':=B\cup\{x_l\}-\{x_k\}$, where $x_l$ is an entering variable and $x_k$ is a leaving variable.
   By Theorem~\ref{theorem:pivot-basic}, $B'$ is again a basic subset for \eqref{eq:lp-problem}.
   If $\xx$ is the basic feasible solution corresponding $B$, and $\xx'$ is the basic feasible solution corresponding to $B'$, then $\cc^T\xx'\geq \cc^T\xx$.
@@ -498,7 +498,7 @@ Also, $\supp(\xx)=\sup(\xx')\subset B\cap B'\subsetneq B$.
 \end{proof}
 Since a finite union of coordinate hyperplanes is a nowhere dense subset of $\RR^n$, it is very unlikely that degeneracy will occur in a real-world linear programming problem.
 Moreover, if it does occur, a small enough perturbation of $\bb$ will bring us back to the non-degenerate world while giving the correct basic subset whose basic feasible solution also optimizes the original problem.
-\begin{definition}[Non-degerate linear program]
+\begin{definition}[Non-degenerate linear program]
   We say that \eqref{eq:lp-problem} is non-degenerate if it admits no degenerate basic subset $B\subset[n]$.
 \end{definition}
 \begin{theorem}
@@ -572,11 +572,64 @@ This can be avoided using \emph{Bland's rule} for choosing the leaving and enter
   With Bland's rule, starting with a given basic subset $B\subset [n]$ for \eqref{eq:lp-problem}, it is not possible to return to $B$ after a any number of pivot steps.
 \end{theorem}
 \begin{proof}
+  Suppose that, upon using pivot steps according to Bland's rule, the simplex method encounters a cycle.
+  Let $F$ denote the set of all the entering (or leaving variables) in the pivot steps of this cycle.
+  Since the objective function does not increase in a cycle, it must be the case that the basic feasible solutions do not change.
+  Therefore for all basic feasible solutions in the cycle $x_j=0$ for all $j\in F$.
   
+  Let $v$ be the largest index in $F$.
+  Let $B$ be a basic subset in the cycle just before $x_v$ enters the basic set.
+  Suppose that the simplex tableau corresponding to $B$ is:
+  \begin{displaymath}
+      \begin{matrix}
+    \xx_B & = & \mathbf d - D\xx_{\bar B}\\
+    \hline
+    \cc^T\xx & = & e - \mathbf e^T \xx_{\bar B},
+  \end{matrix}
+  \end{displaymath}
+  Since we are following Bland's rule, $v$ is the least index among all possible entering variables.
+  Therefore for any $j\in F-\{v\}$, since $j<v$, $e_j\leq 0$.
+
+  Let $B'$ be a basic subset in the cycle just before $x_v$ leaves the basic set.
+  Suppose that the simplex tableau corresponding to $B'$ is:
+  \begin{displaymath}
+    \begin{matrix}
+      \xx_{B'} & = & \mathbf d' - D'\xx_{\bar B'}\\
+      \hline
+      \cc^T\xx & = & e' - \mathbf {e'}^T \xx_{\bar B'},
+    \end{matrix}
+  \end{displaymath}
+  Suppose $x_l$ enters the basic set as $v$ leaves it.
+  Now for all $j\in F$ $d_j$, being the value of $x_j$ in the basic feasible solution corresponding to $B'$, must be $0$.
+  Since we are following Bland's rule, $v$ is the least index among all possible leaving variables.
+  Therefore, for any $j\in F-\{v\}$, since $j<v$ and $d'_v/D'_{vk'}=d'_j/D'_{jk'}=0$, we must have $D'_{jk'}<0$.
+
+  To summarize, we have established:
+  \begin{gather}
+    \label{eq:cycle1}
+    \text{$e_v>0$ and for all $j\in F-\{v\}$, $e_j\leq 0$},\\
+    \label{eq:cycle2}
+    \text{$D_{vk'}>0$ and for all $j\in F-\{v\}$, $D'_{jk'}<0$}.
+  \end{gather}
+
+  Now consider the auxilliary linear program:
+  \begin{displaymath}
+    \text{maximize $\cc^T\xx$ subject to $A\xx=\bb$, $x_v\leq 0$, $\xx_{F-\{v\}}\geq 0$, $\xx_{\bar B-F}=0$.}
+  \end{displaymath}
+  There is no constraint on the variables $\xx_{B-F}$. They may assume positive or negative signs, or take the value $0$.
+
+  Let $\tilde\xx$ denote the basic feasible solution to \eqref{eq:lp-problem} corresponding to $B$.
+  It is also feasible for the auxilliary program.
+  The condition \eqref{eq:cycle1} and the constraints on the auxilliary program imply that, for all feasible $\xx$ in the auxilliary program, $e_j\xx_j\leq 0$ for all $j\in \bar B$.
+  Therefore, $\tilde\xx$ is optimal.
+
+  Now $\tilde\xx$ is also the basic feasible solution to the auxilliary program corresponding to the basic subset $B'$.
+  Since there are no sign constraints on $\xx_{B-F}$, the conditions \eqref{eq:cycle2} imply that, starting with $\tilde\xx$ the leaving variable $x_{k'}$ can be increased indefinitely without violating feasibility.
+  Therefore the objective function is unbounded in the auxilliary program.
+  This contradicts the earlier assertion that the auxilliary program had an optimal solution.
 \end{proof}
 \section{Duality}
 \label{sec:duality}
-
 Given a linear program \eqref{eq:lp-problem}, choose any set of non-negative constants $y_1,\dotsc,y_m$, and consider the sum of the $m$ equations represented by $A\xx=\bb$ and add them up, weighted by the constants $y_1,\dotsc,y_m$.
 The result is a single linear equation in the variables $x_1,\dotsc,x_n$:
 \begin{displaymath}
