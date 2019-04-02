@@ -630,11 +630,31 @@ This can be avoided using \emph{Bland's rule} for choosing the leaving and enter
 \end{proof}
 \section{Duality}
 \label{sec:duality}
-Given a linear program \eqref{eq:lp-problem}, choose any set of non-negative constants $y_1,\dotsc,y_m$, and consider the sum of the $m$ equations represented by $A\xx=\bb$ and add them up, weighted by the constants $y_1,\dotsc,y_m$.
-The result is a single linear equation in the variables $x_1,\dotsc,x_n$:
+Consider a linear program in the form:
+\begin{equation}
+  \label{eq:lpineq}
+  \tag{P}
+  \text{maximize $\cc^T\xx$ subject to $A\xx\leq \bb$, $\xx\geq 0$},
+\end{equation}
+with $n$ variables $\xx=(x_1,\dotsc,x_n)$, $A\in M_{m\times n}(\RR)$, $\bb\in \RR^m$.
+We will call \eqref{eq:lpineq} the \emph{primal} program.
+
+The program \emph{dual} to \eqref{eq:lpineq} is defined as:
+\begin{equation}
+  \label{eq:lpdual}
+  \tag{D}
+  \text{minimize $\bb^T\yy$ subject to $A^T\yy\geq \cc$, $\yy\geq 0$},
+\end{equation}
+with $n$ variables $\yy=(y_1,\dotsc,y_n)$.
+
+Suppose $\xx$ and $\yy$ are feasible solutions to \eqref{eq:lpineq} and \eqref{eq:lpdual} respectively.
+Then, combining the constraints $\cc^T\leq \yy^TA$ and $A\xx\leq \bb$, along with $\xx\geq$ and $\yy\geq 0$ gives:
 \begin{displaymath}
-  \yy^TA\xx=\yy^T\bb.
+  \cc^T\xx\leq\yy^TA\xx\leq \yy^T\bb.
 \end{displaymath}
+Thus if \eqref{eq:lpineq} and \eqref{eq:lpdual} are feasible, then the maximum of \eqref{eq:lpineq} is bounded above by the minimum of \eqref{eq:lpdual}.
+It follows that if the objective function of \eqref{eq:lpineq} is unbounded above on its feasible set, then \eqref{eq:lpdual} has no feasible solutions.
+Similarly, if the objective function of \eqref{eq:lpdual} is unbounded below on its feasible set, then \eqref{eq:lpineq} has no feasible solutions.
 \bibliographystyle{abbrv}
 \bibliography{refs}
 \end{document}
