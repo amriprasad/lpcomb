@@ -539,7 +539,6 @@ Moreover, the support of any permutation matrix has $r$ elements, but every basi
   All four non-basic variables have positive coefficients in the objective function.
   Using $x_{23}$ or $x_{32}$ as entering variables leads to pivots that do not increase the objective function.
 \end{example}
-
 The simplex method begins with a basic subset $B\subset [n]$ for \eqref{eq:lp-problem}.
 How does one find a basic subset to begin with?
 Indeed, the total number of subsets of $[n]$ is $2^n$, and finding a basic subset could be like finding a needle in a (albeit finite) haystack.
@@ -557,7 +556,46 @@ The objective vector is $(0,\dotsc,0,-1,\dotsc,-1)$ (with $n$ zeros and $m$ $-1$
 In this case $B=\{n+1,\dotsc,n+m\}$ is clearly a basic subset with basic feasible solution $\tilde\xx=(0,\dotsc,0,|b_1|,\dotsc,|b_m|)$.
 The original program \eqref{eq:lp-problem} has a feasible solution if and only if the maximum value of the objective function is $0$.
 Thus locating a basic subset is itself a linear programming problem with an obvious basic subset.
+\begin{example}
+  [Construction of transportation arrays]
+  In order to construct an $m\times n$ transportation array with margins $\aa$ and $\bb$ (Example~\ref{example:transportation}), we introduce $r+s$ auxilliary variables $u_1,\dotsc,u_r$ and $v_1,\dotsc,v_s$.
+  Consider the auxilliary linear program:
+  \begin{align*}
+    \sum_{j=1}^s x_{ij} + u_i & = a_i \text{ for } 1\leq i\leq r,\\
+    \sum_{i=1}^r x_{ij} + v_j & = b_j \text{ for } 1\leq j\leq s,\\
+    x_{ij}\geq 0,\;u_i\geq 0\;v_j\geq 0 &= \text{ for } 1\leq i\leq r,\;1\leq j\leq s,\\
+    \text{maximize} & -u_1-\dotsb -u_r - v_1 - \dotsb -v_s.
+  \end{align*}
+  This auxilliary program comes with a God-given basic variables $\{u_1,\dotsc,u_r,v_1,\dotsc,v_s\}$.
+  The corresponding tableau is:
+  \begin{align*}
+    u_i & = a_i - \sum_{j=1}^s x_{ij} \text{ for } i=1,\dotsc,r,\\
+    v_j & = b_j - \sum_{i=1}^r x_{is} \text{ for } j=1,\dotsc,s,\\
+    \hline
+    \cc^T\xx &= -\sum a_i - \sum_j b_j + \sum_i\sum_j x_{ij}. 
+  \end{align*}
+  We may choose any $x_{ij}$ as entering variable.
+  Then the leaving variable will be $u_i$ if $a_i<b_j$, and $v_j$ if $b_i<u_j$.
+  If $a_i=b_j$ either variable could be chosen as leaving.
+  We now have a new tableau, for example if we had chosen $x_{i_0j_0}$ as entering $u_{i_0}i$ as leaving,
+  \begin{align*}
+    x_{i_0j_0} & = a_{i_0} - u_{i_0} -\sum_{j\neq j_0} x_{i_0j}\\
+    v_{j_0} & = b_{j_0} - \sum_{i\neq i_0} x_{ij_0} - a_{i_0} + u_{i_0} + \sum_{j\neq j_0} x_{i_0,j}\\
+    u_i & = a_i - \sum_j x_{ij} \text{ for }i\neq i_0,\\
+    v_j & = b_j - \sum_{i=1}^r x_{is} \text{ for } j\neq j_0,\\
+    \hline
+    \cc^T\xx & = -\sum_{i\neq i_0} a_i - \sum b_j + \sum_{i\neq i_0}\sum_jx_{ij} -u_{i_0}. 
+  \end{align*}
+  The variables $x_{i_0,j}$ (the $i_0$th row) have dissapeared from the objective function.
+  The $i_0$th row is now saturated and the rest of the algorithm would run with the same set of possible pivot steps as if the $i$th row simply did not exist, and $b_{j_0}=b_j-a_{i_0}$.
 
+  At every stage of this algorithrm, we would have a set $B\cap([r]\times [s])$ of basic variables for which the corresponding columns of the constraint matrix for the \emph{original} tranportation polytope are linearly independent.
+  In other words, if we were to consider the bipartite graph on $[r]\sqcup [s]$ joining $i$ to $j$ if $(i,j)\in B\cap([r]\times [s])$, the resulting subgraph of $K_{r,s}$ would be a forest.
+  For the objective function to contain no positive coefficients, all the $r+s$ variables $u_i$ and $v_j$ would have to leave the basic set.
+  At the very last stage, suppose only the variable $u_{i_0}$ remained, it would be 
+
+  Conversely, starting with every spanning forest that is the support of a 
+\end{example}
 \section{Dealing with degeneracy}
 \label{sec:deal-with-degen}
 
