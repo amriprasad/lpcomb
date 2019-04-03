@@ -11,6 +11,7 @@
 \newcommand{\MM}{\mathbf M}
 \newtheorem{theorem}{Theorem}[section]
 \newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
 \theoremstyle{definition}
 \newtheorem{definition}[theorem]{Definition}
 \theoremstyle{remark}
@@ -211,15 +212,16 @@ The converse is also true:
 \end{proof}
 \begin{definition}
   [General form of a linear program]
+  \label{example:glp}
   A more general form of a linear program involves linear inequalities and equalities.
   As before take $A$ to be an $m\times n$ matrix with real entries, $\bb\in \RR^m$, and $\cc\in \RR^n$.
   A general linear program has the form:
   \begin{equation}
     \label{eq:general-lp}
     \tag{GLP}
-    \text{optimize $\cc^T\xx$ subject to }a_{i1}x_1+\dotsb + a_{in}x_n\; R_i\; b_i \text{ for }i=1,\dotsc,m,
+    \text{optimize $\cc^T\xx$ subject to }a_{i1}x_1+\dotsb + a_{in}x_n\; R_i\; b_i \text{ for }i=1,\dotsc,m,\; x_jS_j0
   \end{equation}
-  where $R_i$ is one of the three symbols $\leq$, $\geq$, and $=$, and the word optimize is replaced by either maximize, or minimize.
+  where each $R_i$ and $S_j$ is one of the three symbols $\leq$, $\geq$, and $=$, and the word optimize is replaced by either maximize, or minimize.
   A basic feasible solution is one that is defined by equalities in $n$ linearly independent constraints (which could be equality or inequality to begin with).
 \end{definition}
 \begin{example}
@@ -745,49 +747,149 @@ Thus if \eqref{eq:lpineq} and \eqref{eq:lpdual} are feasible, then the maximum o
 It follows that if the objective function of \eqref{eq:lpineq} is unbounded above on its feasible set, then \eqref{eq:lpdual} has no feasible solutions.
 Similarly, if the objective function of \eqref{eq:lpdual} is unbounded below on its feasible set, then \eqref{eq:lpineq} has no feasible solutions.
 \begin{theorem}
+  \label{theorem:duality}
   If \eqref{eq:lpineq} and \eqref{eq:lpdual} are both feasible, then the maximum value of \eqref{eq:lpineq} equals the minimum value of \eqref{eq:lpdual}.
 \end{theorem}
 \begin{proof}
-  Let $\xx$ be a basic feasible solution corresponding to a basic subset $B$ for which the objective function of \eqref{eq:lpineq} attains its maximum.
   Convert \eqref{eq:lpineq} to equational form by introducing slack variables $x_{m+1},\dotsc,x_{m+n}$.
-  Let $\bar\xx = (x_1,\dotsc,x_{m+n})$.
-  The new constraint matrix is $\bar A=
+  Let $\bar\xx = (x_1,\dotsc,x_{m+n})$, $\bar A=
   \begin{pmatrix}
     A & I_m
   \end{pmatrix}
-  $.
-  The augmented objective vector $\bar\cc=(c_1,\dotsc,c_n,0,\dotsc,0)\in \RR^{m+n}$ has the property that $\cc^T\xx = \bar\cc^T\bar\xx$.
+  $,
+  and $\bar\cc=(c_1,\dotsc,c_n,0,\dotsc,0)\in \RR^{m+n}$.
+  The equational form of \eqref{eq:lpineq} is
+  \begin{displaymath}
+    \text{maximize $\bar\cc^T\bar\xx$ subject to $\bar A\bar\xx=\bb$, $\bar\xx\geq 0$}.
+  \end{displaymath}
   Let $B\subset [m+n]$ be a basic subset whose basic feasible solution $\bar\xx^*$ maximizes the objective function.
-  Then $\xx^*=\bar\xx^*_{[n]}$ maximizes the objective function of \eqref{eq:lpineq}.
-  Consider its tableau:
-  \begin{align*}
-    \xx_B & = d - D\xx_{\bar B}\\
+  The corresponding simplex tableau is:
+  \begin{equation}
+    \label{eq:duality-tab}
+    \begin{array}{cc}
+    \bar\xx_B & = \bar A_B^{-1}\bb - \bar A_B^{-1}\bar A_{\bar B}\bar\xx_{\bar B}\\
     \hline
-    \cc^T\xx & = e - \mathbf e^T\xx_{\bar B}.
-  \end{align*}
-  Let $\yy^*=(\bar\cc^T_B \bar A_B^{-1})$.
-  Then
-  \begin{align*}
-    (\yy^*)^T\bb & = \bar\cc^T_B\bar A_B^{-1}\bb\\
-                 & = \bar\cc^T_B \bar\xx^*_B\\
-                 & = \bar\cc^T\bar\xx^*\\
-                 & = \cc^T\xx^*.
-  \end{align*}
-  We claim that $A^T\yy^*\geq c$, and $\yy^*\geq 0$ (so that it is feasible for \eqref{eq:lpdual}).
-  These two conditions can be combined to $\bar A^T\yy^*\geq \bar\cc$.
-  Substituting $\yy^*=(\bar\cc^T_B \bar A_B^{-1})^T$ into the left hand side gives:
+      \bar\cc^T\bar\xx & = \bar\cc^T\bar A_B^{-1}\bb + (\bar\cc_{\bar B}^T - \bar\cc_B^T\bar A_B^{-1}\bar A_{\bar B}\bar)\xx_{\bar B}.
+    \end{array}
+  \end{equation}
+  The optimal solution $\bar\xx^*$ is obtained by setting $\bar\xx_{\bar B}=0$ in the above tableau.
+  So the maximum value of the objective function is:
   \begin{displaymath}
-    \mathbf w:=\bar A^T(\bar\cc^T\bar A_B^{-1})^T = \bar A\bar A_B^{-1}\bar\cc.
+    \bar\cc^T\bar\xx^* = \bar\cc^T\bar A_B^{-1}\bb. 
   \end{displaymath}
-  The basic components of this vector are:
+  So if $\yy^*=(\cc_B^T\bar A_B^{-1})^T$, then
   \begin{displaymath}
-    \mathbf w_B = \bar A_B\bar A_B^{-1} \bar \cc = \bar\cc_B. 
+    \bb^T\yy^* = \bar\cc^T\bar\xx^*.
   \end{displaymath}
-  Thus the basic components of $\bar A^T\yy^*$ are equal to the basic components of $\bar\cc$.
-  For the non-basic components, we have:
+  We claim that $\yy*$ is feasible for \eqref{eq:lpdual}, i.e., $\yy^*\geq 0$ and $A^T\yy^*\geq \cc$.
+  These two inequalities can be combined and written as $\bar A^T\yy^*\geq \bar\cc$.
+  This combined inequality can now be split up along rows from $B$ and rows from $\bar B$:
   \begin{displaymath}
-    \mathbf w_{\bar B} = \bar A_{\bar B} A_B^{-1}\bar\cc = \bar\cc_{\bar B} - \mathbf e.
+    \bar A_B^T\yy^* \geq \bar\cc_B\text{ and } \bar A_{\bar B}^T\yy^*\geq \bar\cc_{\bar B}.
   \end{displaymath}
+  Plugging in the value of $\yy^*$ into these inequalities turns them into:
+  \begin{displaymath}
+    \bar A_B^T(\cc_B^T\bar A_B^{-1})^T \geq \bar\cc_B\text{ and } \bar A_{\bar B}^T(\cc_B^T\bar A_B^{-1})^T\geq \bar\cc_{\bar B}.
+  \end{displaymath}
+  The inequality on the left holds becuase it is actually an equality!
+  As for the inequality on the right, it is just the non-positivity of the coefficients of the objective function when it is expressed in terms of $\bar\xx_{\bar B}$ as in the tableau \eqref{eq:duality-tab} (Theorem~\ref{theorem:pivot-basic}).
+
+  To prove the converse, observe that \eqref{eq:lpdual} can be written as:
+  \begin{displaymath}
+    \text{maximize $-\bb^T\yy$ subject to $-A^T\yy\leq -\cc$ and $\yy\geq 0$}.
+  \end{displaymath}
+  The dual of this program is:
+  \begin{displaymath}
+    \text{minimize $-\cc^T\xx$ subject to $-A\xx\geq -\bb$ and $\xx\geq 0$},
+  \end{displaymath}
+  which is equivalent to \eqref{eq:lpineq}.
+\end{proof}
+Duality applies equally well to more general linear programs of the form \eqref{eq:general-lp} in Example~\ref{example:glp}.
+For example, a program in equational form \eqref{eq:lp-problem} can be rewritten as:
+\begin{displaymath}
+  \text{maximize $\cc^T\xx$ subject to  $A\xx\leq \bb$, $-A\xx\leq -\bb$, $\xx\geq 0$}.
+\end{displaymath}
+The resulting dual program will have $2m$ variables (where $m$ is the number of rows of $A$), say $\mathbf u=u_1,\dotsc,u_{2m}$.
+The dual program is:
+\begin{displaymath}
+  \text{minimize $\begin{pmatrix}\bb^T&-\bb^T\end{pmatrix}\mathbf u$ subject to $\begin{pmatrix} A^T & A^T \end{pmatrix}\mathbf u \geq \cc$ and $\mathbf u\geq 0$}.
+\end{displaymath}
+Since the $i$th column of of the contraint matrix $\tilde A =
+\begin{pmatrix}
+  A^T & A^T
+\end{pmatrix}$ coincides with its $n+i$th column a basic subset can have one or the other, but not both.
+Let $y_i=u_i-u_{n+i}$.
+Then $\bb^T\yy=\begin{pmatrix}\bb^T&-\bb^T\end{pmatrix}\mathbf u$.
+However, the variables $y_i$ can be negative as well as non-negative.
+Thus the dual program is:
+\begin{displaymath}
+  \text{minimize $\bb^T\yy$ subject to $A^T\yy\geq \cc$}.
+\end{displaymath}
+Unlike \eqref{eq:lpdual}, the constraint $\yy\geq 0$ is missing.
+
+Thinking of the relations occuring in \eqref{eq:general-lp} as a vectors $R=(R_1,\dotsc,R_m)$ and $S=(S_1,\dotsc,S_n)$ of relations, each $R_i$ taken from the set $\{\geq,\leq,=\}$, and each $S_j$ taken from $\{\geq,\leq,\geq\text{or}\leq\}$, we write \eqref{eq:general-lp} as
+\begin{equation}
+  \tag{GLP}
+  \text{Ximize $\cc^T\xx$ subject to $A\xx R \bb$, $\xx S0$}.
+\end{equation}
+the dual is given by
+\begin{equation}
+  \label{eq:gdp}
+  \tag{GDP}
+  \text{Yimize $\bb^T\yy$ subject to $A^T\yy S' \cc$ and $\yy R' 0$}
+\end{equation}
+where if $X$ is $\max$ then $Y$ is $\min$ and vice-versa, if $R_i$ is $\geq$, $\leq$, $=$, then $R'_i$ is $\leq$, $\geq$, $\geq\text{or}\leq$, respectively, and if $S_j$ is $\geq$, $\leq$, $\geq\text{or}\leq$, then $S'_j$ is $\geq$, $\leq$, $=$, respectively.
+\begin{theorem}
+  [Duality theorem for geneal linear programs]
+  \label{theorem:gen-dual}
+  If \eqref{eq:general-lp} is bounded and feasible, then so is \eqref{eq:gdp}, and their oprtimal values are equal.
+\end{theorem}
+\begin{exercise}
+  Construct an example of an infeasible linear program of the form \eqref{eq:lpineq} such that the dual program \eqref{eq:lpdual} is also infeasible.
+\end{exercise}
+\begin{corollary}
+  [Farkas lemma]
+  Let $A$ be an $m\times n$ real matrix and $\bb\in \RR^m$ be a vector.
+  Then exactly one of the following occurs:
+  \begin{enumerate}
+  \item \label{item:1} There exists $\xx\geq 0$ such that $A\xx=\bb$,
+  \item \label{item:2} There exists $\yy$ such that $\yy^t\bb<0$ and $A^T\yy\geq 0$.
+  \end{enumerate}
+\end{corollary}
+\begin{proof}
+  Let $\mathbf 0$ denote the zero vector in $\RR^n$.
+  Consider the primal program:
+  \begin{displaymath}
+    \text{maximize $\mathbf 0^T\xx$ subject to $A\xx=\bb$ and $\xx\geq 0$}.
+  \end{displaymath}
+  Its dual is the program:
+  \begin{displaymath}
+    \text{minimize $\bb^T\yy$ subject to $A^T\yy\geq 0$.}
+  \end{displaymath}
+  If the primal program is feasible, it is bounded and its optimal value if $0$.
+  By the generalized duality theorem (Theorem~\ref{theorem:gen-dual}), $0$ is the minimum value of $\bb^T\yy$ subject to $A^T\yy\geq 0$, so \eqref{item:2} is ruled out.
+  Conversely, if \eqref{item:2} holds, then by taking large positive multiples of $\yy$ we can show that $\bb^T\yy$ is unbounded below subject to $A^T\yy\geq 0$.
+  Therefore the primal program has to be infeasible.
+\end{proof}
+\begin{definition}
+  [Convex cone generated by a set of points]
+  Then the convex cone generated by $\aa_1,\dotsc,\aa_m\in \RR^n$ is the set of all vectors $\xx\in \RR^m$ such that
+  \begin{displaymath}
+    \xx = t_1\aa_1+\dotsb+t_n\aa_n \text{ for some }t_1,\dotsc,t_n\geq 0.
+  \end{displaymath}
+\end{definition}
+\begin{corollary}
+  Let $\aa_1,\dotsc,\aa_n\in \RR^m$.
+  Then for any point $\xx\in \RR^m$ exactly one of the following occurs:
+  \begin{enumerate}
+  \item \label{item:3}
+    $\xx$ lies in the convex cone generated by $a_1,\dotsc,a_n$.
+  \item \label{item:4}
+    There exists a hyperplane passing through the origin that separates $a_1,\dotsc,a_n$ from $\xx$.
+  \end{enumerate}
+\end{corollary}
+\begin{proof}
+  Take $A$ to the matrix with columns $\aa_1,\dotsc,\aa_n$, and apply Farkas's lemma.
 \end{proof}
 \bibliographystyle{abbrv}
 \bibliography{refs}
