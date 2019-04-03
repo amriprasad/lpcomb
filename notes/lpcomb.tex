@@ -127,6 +127,7 @@ Clearly, a feasible solution $\xx$ is basic if and only if the submatrix $A_{\su
   Each basic feasible solution corresponds to a two possible basic subsets.
 \end{example}
 \begin{exercise}
+  \label{exercise:basic_spanning_trees}
   Let $B$ be a basic subset of $[r]\times [s]$ for the transportation polytope.
   By definition, $B$ has cardinality $r+s-1$.
   Given $B$, define a bipartite graph $\Gamma_B$ on the set $\{1,\dotsc,r\}\sqcup \{1',\dotsc,s'\}$ by joining $i$ to $j'$ if $(i,j)\in B$.
@@ -496,6 +497,29 @@ Also, $\supp(\xx)=\sup(\xx')\subset B\cap B'\subsetneq B$.
   In other words, $\bb$ lies in image under $A_B$ of a coordinate hyperplane, which, by the non-singularity of $A_B$, is a hyperplane.
   Thus the set of constraint vectors $\bb$ for which there exists a degenerate basic subset is a finite union of a hyperplanes.
 \end{proof}
+\begin{example}
+  [Degeneracy in transportation polytopes]
+  When are the defining equations for $\MM_{\aa\bb}$ from Example~\ref{example:transportation} degenerate?
+  Suppose that $\xx$ is a basic feasible solution corresponding to a basic subset $B$.
+  If $\supp(\xx)\subsetneq B$, then $\Gamma_{\supp\xx}$ is a forest with at least two connected components.
+  Therefore there exist proper subsets $K\subset [r]$ and $L\subset [s]$ with complements $[r]-K$ and $[s]-L$ respectively such that $\Gamma_{\supp\xx}$ has no edges between $K$ and $\bar L$ or between $\bar K$ and $L$.
+  It follows that
+  \begin{displaymath}
+    \sum_{i\in K} a_i = \sum_{i\in K}\sum_{j\in L} x_{ij} = \sum_{j\in L} b_j.
+  \end{displaymath}
+  Conversely suppose there exist proper subset $K\subset [r]$ and $L\subset [s]$ such that
+  \begin{equation}
+    \label{eq:transportation-degeneration}
+    \sum_{i\in K}a_i = \sum_{j\in L} b_j,
+  \end{equation}
+  then (as we shall see in Theorem~\ref{theorem:brualdi-algo}) both $\MM_{\aa_K\bb_L}$ and $\MM_{\aa_{\bar K}\bb_{\bar L}}$ are non-empty.
+    Putting together feasible points for these polytopes will with give us a point $\xx$ in $\MM_{\aa\bb}$ whose support is a forest, hence a proper subset of any basic subset.
+    Thus we have the following:
+    \begin{theorem}
+      Assume that $\aa>0$ and $\bb>0$.
+      The polytope $\MM_{\aa\bb}$ is degenerate if and only if there exist proper subsets $K\subset [r]$ and $L\subset [s]$ such that the condition \eqref{eq:transportation-degeneration} holds.
+    \end{theorem}
+\end{example}
 Since a finite union of coordinate hyperplanes is a nowhere dense subset of $\RR^n$, it is very unlikely that degeneracy will occur in a real-world linear programming problem.
 Moreover, if it does occur, a small enough perturbation of $\bb$ will bring us back to the non-degenerate world while giving the correct basic subset whose basic feasible solution also optimizes the original problem.
 \begin{definition}[Non-degenerate linear program]
@@ -558,6 +582,7 @@ The original program \eqref{eq:lp-problem} has a feasible solution if and only i
 Thus locating a basic subset is itself a linear programming problem with an obvious basic subset.
 \begin{example}
   [Construction of transportation arrays]
+  \label{example:transportation-vertex-algo}
   In order to construct an $m\times n$ transportation array with margins $\aa$ and $\bb$ (Example~\ref{example:transportation}), we introduce $r+s$ auxilliary variables $u_1,\dotsc,u_r$ and $v_1,\dotsc,v_s$.
   Consider the auxilliary linear program:
   \begin{align*}
@@ -588,17 +613,43 @@ Thus locating a basic subset is itself a linear programming problem with an obvi
   \end{align*}
   The variables $x_{i_0,j}$ (the $i_0$th row) have dissapeared from the objective function.
   The $i_0$th row is now saturated and the rest of the algorithm would run with the same set of possible pivot steps as if the $i$th row simply did not exist, and $b_{j_0}=b_j-a_{i_0}$.
+  The new margin vectors are:
+  \begin{displaymath}
+    \aa' = (a_1,\dotsc,a_{i_0-1},a_{i_0+1},\dotsc,a_r),\quad \bb'=(b_1,\dotsc,b_{j_0}-1,b_{j_0}-a_{i_0},b_{j_0+1},\dotsc,b_s).
+  \end{displaymath}
+  We now analyze the running of this auxilliary program by induction on $r+s$.
+  \begin{theorem}
+    \label{theorem:brualdi-algo}
+    The transportation polytope $\MM_{\aa\bb}$ is non-empty if and only if $\sum_{i=1}^r a_i=\sum_{j=1}^s b_j$.
+    If this condition holds, then every basic feasible solution in $\MM_{\aa\bb}$ can be obtained by a sequence of pivot steps for the auxilliary linear program described above.
+  \end{theorem}
+  The method for finding all the vertices of $\MM_{\aa\bb}$ in the above theorem is equivalent to the algorithm of Corollary~8.1.4 in Brualdi's book \cite{Brualdi}. 
+  \begin{proof}
+    Clearly if $\MM_{\aa\bb}$ has a feasible point $\xx=(x_{ij})$ then $\sum a_i=\sum_i\sum_j=\sum_jb_j$.
+    For the converse, proceed by induction on $r+s$.
+    Take as base case $r+s=2$, where the array has one row and one column, and clearly it is feasible if the row margin equals the column margin.
+    As we have seen, each pivot step reduces $r+s$ by one, and reduces both the margins by the same quantity.
+    Thus by the induction hypothesis the new transportation polytope is non-empty.
 
-  At every stage of this algorithrm, we would have a set $B\cap([r]\times [s])$ of basic variables for which the corresponding columns of the constraint matrix for the \emph{original} tranportation polytope are linearly independent.
-  In other words, if we were to consider the bipartite graph on $[r]\sqcup [s]$ joining $i$ to $j$ if $(i,j)\in B\cap([r]\times [s])$, the resulting subgraph of $K_{r,s}$ would be a forest.
-  For the objective function to contain no positive coefficients, all the $r+s$ variables $u_i$ and $v_j$ would have to leave the basic set.
-  At the very last stage, suppose only the variable $u_{i_0}$ remained, it would be 
-
-  Conversely, starting with every spanning forest that is the support of a 
-\end{example}
+    It remains to show that every basic feasible solution can be attained by a sequence of pivot steps.
+    Suppose that $\xx$ is a basic feasible solution.
+    By Example~\ref{exercise:basic_spanning_trees}, $\Gamma_{\supp\xx}$ is contained in a spanning tree, and hence is a spanning forest.
+    Consider a leaf of this graph, say a row index $1\leq i_0\leq r$ (the case where it is a column index is not different).
+    Being a leaf, this vertex is connected to a unique column index $1\leq j_0\leq s$.
+    Perform the first pivot step for the auxilliary program taking $x_{i_0j_0}$ as entering variable and $u_{i_0}$ as leaving variable.
+    As discussed before what remains is a problem with $r-1$ rows and $s$ columns, for which all basic feasible solutions can indeed be obtained by induction hypothesis.
+  \end{proof}
+\end{example}  
+\begin{theorem}
+  [Birkhoff von Neumann theorem]
+  The vertices of the Birkhoff polytope are permutation matrices.
+\end{theorem}
+\begin{proof}
+  Every permutation matrix, being supported on a forest (in fact a perfect matching) of $K_{n,n}$ is a vertex.
+  The converse follows from observing (by induction) that every run of the algorithm of Example~\ref{example:transportation-vertex-algo} produces a permutation matrix.
+\end{proof}
 \section{Dealing with degeneracy}
 \label{sec:deal-with-degen}
-
 In the non-degenrate case, we saw that, with an sequence of arbitrarily chosen pivot moves, it is possible to go from any basic feasible solution to an  optimal one.
 In the degenerate case, it is quite possible that we end up repeating a cycle of pivot moves indefinitely.
 This can be avoided using \emph{Bland's rule} for choosing the leaving and entering variable.
@@ -693,6 +744,51 @@ Then, combining the constraints $\cc^T\leq \yy^TA$ and $A\xx\leq \bb$, along wit
 Thus if \eqref{eq:lpineq} and \eqref{eq:lpdual} are feasible, then the maximum of \eqref{eq:lpineq} is bounded above by the minimum of \eqref{eq:lpdual}.
 It follows that if the objective function of \eqref{eq:lpineq} is unbounded above on its feasible set, then \eqref{eq:lpdual} has no feasible solutions.
 Similarly, if the objective function of \eqref{eq:lpdual} is unbounded below on its feasible set, then \eqref{eq:lpineq} has no feasible solutions.
+\begin{theorem}
+  If \eqref{eq:lpineq} and \eqref{eq:lpdual} are both feasible, then the maximum value of \eqref{eq:lpineq} equals the minimum value of \eqref{eq:lpdual}.
+\end{theorem}
+\begin{proof}
+  Let $\xx$ be a basic feasible solution corresponding to a basic subset $B$ for which the objective function of \eqref{eq:lpineq} attains its maximum.
+  Convert \eqref{eq:lpineq} to equational form by introducing slack variables $x_{m+1},\dotsc,x_{m+n}$.
+  Let $\bar\xx = (x_1,\dotsc,x_{m+n})$.
+  The new constraint matrix is $\bar A=
+  \begin{pmatrix}
+    A & I_m
+  \end{pmatrix}
+  $.
+  The augmented objective vector $\bar\cc=(c_1,\dotsc,c_n,0,\dotsc,0)\in \RR^{m+n}$ has the property that $\cc^T\xx = \bar\cc^T\bar\xx$.
+  Let $B\subset [m+n]$ be a basic subset whose basic feasible solution $\bar\xx^*$ maximizes the objective function.
+  Then $\xx^*=\bar\xx^*_{[n]}$ maximizes the objective function of \eqref{eq:lpineq}.
+  Consider its tableau:
+  \begin{align*}
+    \xx_B & = d - D\xx_{\bar B}\\
+    \hline
+    \cc^T\xx & = e - \mathbf e^T\xx_{\bar B}.
+  \end{align*}
+  Let $\yy^*=(\bar\cc^T_B \bar A_B^{-1})$.
+  Then
+  \begin{align*}
+    (\yy^*)^T\bb & = \bar\cc^T_B\bar A_B^{-1}\bb\\
+                 & = \bar\cc^T_B \bar\xx^*_B\\
+                 & = \bar\cc^T\bar\xx^*\\
+                 & = \cc^T\xx^*.
+  \end{align*}
+  We claim that $A^T\yy^*\geq c$, and $\yy^*\geq 0$ (so that it is feasible for \eqref{eq:lpdual}).
+  These two conditions can be combined to $\bar A^T\yy^*\geq \bar\cc$.
+  Substituting $\yy^*=(\bar\cc^T_B \bar A_B^{-1})^T$ into the left hand side gives:
+  \begin{displaymath}
+    \mathbf w:=\bar A^T(\bar\cc^T\bar A_B^{-1})^T = \bar A\bar A_B^{-1}\bar\cc.
+  \end{displaymath}
+  The basic components of this vector are:
+  \begin{displaymath}
+    \mathbf w_B = \bar A_B\bar A_B^{-1} \bar \cc = \bar\cc_B. 
+  \end{displaymath}
+  Thus the basic components of $\bar A^T\yy^*$ are equal to the basic components of $\bar\cc$.
+  For the non-basic components, we have:
+  \begin{displaymath}
+    \mathbf w_{\bar B} = \bar A_{\bar B} A_B^{-1}\bar\cc = \bar\cc_{\bar B} - \mathbf e.
+  \end{displaymath}
+\end{proof}
 \bibliographystyle{abbrv}
 \bibliography{refs}
 \end{document}
