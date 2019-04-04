@@ -830,13 +830,13 @@ Unlike \eqref{eq:lpdual}, the constraint $\yy\geq 0$ is missing.
 Thinking of the relations occuring in \eqref{eq:general-lp} as a vectors $R=(R_1,\dotsc,R_m)$ and $S=(S_1,\dotsc,S_n)$ of relations, each $R_i$ taken from the set $\{\geq,\leq,=\}$, and each $S_j$ taken from $\{\geq,\leq,\geq\text{or}\leq\}$, we write \eqref{eq:general-lp} as
 \begin{equation}
   \tag{GLP}
-  \text{Ximize $\cc^T\xx$ subject to $A\xx R \bb$, $\xx S0$}.
+  \text{Ximize $\cc^T\xx$ subject to $A\xx \,R\, \bb$, $\xx \,S\,0$}.
 \end{equation}
 the dual is given by
 \begin{equation}
   \label{eq:gdp}
   \tag{GDP}
-  \text{Yimize $\bb^T\yy$ subject to $A^T\yy S' \cc$ and $\yy R' 0$}
+  \text{Yimize $\bb^T\yy$ subject to $A^T\yy\, S'\, \cc$ and $\yy\, R'\, 0$}
 \end{equation}
 where if $X$ is $\max$ then $Y$ is $\min$ and vice-versa, if $R_i$ is $\geq$, $\leq$, $=$, then $R'_i$ is $\leq$, $\geq$, $\geq\text{or}\leq$, respectively, and if $S_j$ is $\geq$, $\leq$, $\geq\text{or}\leq$, then $S'_j$ is $\geq$, $\leq$, $=$, respectively.
 \begin{theorem}
@@ -891,6 +891,29 @@ where if $X$ is $\max$ then $Y$ is $\min$ and vice-versa, if $R_i$ is $\geq$, $\
 \begin{proof}
   Take $A$ to the matrix with columns $\aa_1,\dotsc,\aa_n$, and apply Farkas's lemma.
 \end{proof}
+\chapter{Flows in Networks}
+\label{cha:flows-networks}
+
+\section{The flow optimization problem}
+\label{sec:flow-optim-probl}
+\begin{definition}[Network]
+  A network is a pair $(N,A)$, where $N$ is set and $A\subset N^2$.
+  We call $N$ the set of \emph{nodes} of the network and $A$ the set of \emph{arcs}.
+  A \emph{source} in a network is a distinguished node $u\in N$, and a target is a distinguished node $v\in N$, different from $u$.
+\end{definition}
+The pair $(N,A)$ is visualized by representing each node $x\in A$ by a circle labeled $x$, and each element of $A=(x,y)$ by an arrow joining the circle labeled $x$ to the circle labeled $y$.
+\begin{example}
+  Let $N=\{u,1,2,\dotsc,r,1',2',\dotsc,s',v\}$, and
+  \begin{displaymath}
+    A = \{(u,i)\mid 1\leq i\leq r\}\cup\{(i,j')\mid 1\leq i\leq r,2\leq j\leq s\}\cup\{(j',v)\mid 1\leq j\leq s\}.
+  \end{displaymath}
+  This network, for $r=3$ and $s=4$, is represented by:
+\end{example}
+\begin{definition}
+  [Flow]
+  A flow in a network $(N,A)$ with source $s$ and target $t$ is a function:
+  
+\end{definition}
 \bibliographystyle{abbrv}
 \bibliography{refs}
 \end{document}
