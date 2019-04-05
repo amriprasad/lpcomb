@@ -944,6 +944,9 @@ Given a network $(N,A)$ with a capacity function $c:A\to \RR_{\geq}$, the maxima
   \text{maximize $v_f$ among all feasible flows on $(N,A)$ with capacity $c$.}
 \end{equation}
 The maximal flow problem is a linear program with variable $f(x,y)$ indexed by the set $A$ of arcs in the network.
+The maxflow problem is a special case of a linear programming problem \eqref{eq:general-lp} from Section~\ref{sec:feas-opt}.
+The variables are $f(x,y)$, one for each arc $(x,y)\in N$, constrained to be non-negative.
+The constraints are equations \eqref{eq:net-zero} defining a flow (one euqation for each node in $N\setminus \{u,v\}$) and the inequalities $f(x,y)\leq c(x,y)$ for each arc $(x,y)\in A$. 
 \bibliographystyle{abbrv}
 \bibliography{refs}
 \end{document}
