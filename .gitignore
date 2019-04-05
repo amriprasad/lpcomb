@@ -3,3 +3,8 @@
 *.log
 *.aux
 *.out
+#*
+*#
+*.bib
+*.blg
+.gitignore

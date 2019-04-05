@@ -9,10 +9,10 @@ def transportation_net(r,s):
     d = dict()
     d['u'] = (0,0)
     for i in range(r):
-        d[(0,i)] = (1,i)
+        d[(0,i)] = (i,-1)
     for j in range(s):
-        d[(1,j)] = (2,j)
-    d['v'] = (3,s-1)
+        d[(1,j)] = (j,-2)
+    d['v'] = (s-1,-3)
     return G, d
 
 def draw_transporation_net(r,s):
@@ -21,13 +21,13 @@ def draw_transporation_net(r,s):
         if inp == 'u' or inp == 'v':
             return inp
         elif inp[0] == 0:
-            return str(inp[1])
+            return str(inp[1]+1)
         else:
-            return str(inp[1])+"\'"
+            return str(inp[1]+1)+"\'"
     H = G.relabel(lab_fn, inplace=False)
     print H.vertices()
     e = dict()
     for n in G.vertices():
         e[lab_fn(n)] = d[n]
-    return H.plot(pos=e, vertex_size=200)
+    return H.plot(pos=e, vertex_size=400)
         

@@ -1,5 +1,5 @@
 \documentclass{amsbook}
-\usepackage{amssymb,hyperref}
+\usepackage{graphicx,amssymb,hyperref}
 \newcommand{\vv}{\mathbf v}
 \newcommand{\xx}{\mathbf x}
 \newcommand{\yy}{\mathbf y}
@@ -907,13 +907,43 @@ The pair $(N,A)$ is visualized by representing each node $x\in A$ by a circle la
   \begin{displaymath}
     A = \{(u,i)\mid 1\leq i\leq r\}\cup\{(i,j')\mid 1\leq i\leq r,2\leq j\leq s\}\cup\{(j',v)\mid 1\leq j\leq s\}.
   \end{displaymath}
-  This network, for $r=3$ and $s=4$, is represented by:
+  This network, for $r=3$ and $s=4$, is represented by
+  \begin{center}
+    \includegraphics[width=0.5\textwidth]{transportation_network.png}  
+  \end{center}
 \end{example}
 \begin{definition}
   [Flow]
-  A flow in a network $(N,A)$ with source $s$ and target $t$ is a function:
-  
+  A flow in a network $(N,A)$ with source $u$ and target $v$ is a function $f:A\to \RR_{\geq 0}$ whose value $f(x,y)$ at an arc $(x,y)\in A$ is known as the flow through the arc $(x,y)$.
+  It is assumed to satisfy the condition that the flow through any vertex other than the source or sink of the network is $0$:
+  \begin{equation}
+    \label{eq:net-zero}
+    \tag{*}
+    \sum_{\{y\mid (x,y)\in A\}}f(x,y) - \sum_{\{y\mid (y,x)\in A\}} f(y,x) = 0 \text{ for all } x\in N-\{u,v\}.
+  \end{equation}
+  The \emph{value} of the flow is defined as the net flow out of the source $u$:
+  \begin{displaymath}
+    v = \sum_{\{y\mid (u,y)\in N\}} f(u,y) - \sum_{\{y\mid (y,u)\in N\}} f(y,u).
+  \end{displaymath}
 \end{definition}
+\begin{exercise}
+  Show that, for any flow $f$ on a network $(N,A)$ with source $u$ and sink $v$, the flow out of the source $u$ equals the net flow into the sink $v$:
+  \begin{displaymath}
+    \sum_{\{y\mid (u,y)\in N\}} f(u,y) - \sum_{\{y\mid (y,u)\in N\}} f(y,u) = \sum_{\{y\mid (u,y)\in N\}} f(y,v) - \sum_{\{y\mid (y,u)\in N\}} f(v,y).
+  \end{displaymath}
+\end{exercise}
+\begin{definition}
+  [Capacity function]
+  A capacity function on a network $(N,A)$ is a function $c:A\to \RR_{\geq 0}$.
+  Given a capacity function, a \emph{feasible} flow is a flow on $(N,A)$ such that $f(x,y)\leq c(x.y)$ for every $(x.y)\in A$.
+\end{definition}
+Given a network $(N,A)$ with a capacity function $c:A\to \RR_{\geq}$, the maximal flow problem is:
+\begin{equation}
+  \label{eq:flowmax}
+  \tag{F}
+  \text{maximize $v_f$ among all feasible flows on $(N,A)$ with capacity $c$.}
+\end{equation}
+The maximal flow problem is a linear program with variable $f(x,y)$ indexed by the set $A$ of arcs in the network.
 \bibliographystyle{abbrv}
 \bibliography{refs}
 \end{document}
