@@ -1,5 +1,5 @@
 \documentclass{amsbook}
-\usepackage{graphicx,amssymb,hyperref}
+\usepackage{tkz-graph,graphicx,amssymb,hyperref}
 \newcommand{\vv}{\mathbf v}
 \newcommand{\xx}{\mathbf x}
 \newcommand{\yy}{\mathbf y}
@@ -94,7 +94,7 @@ Clearly, a feasible solution $\xx$ is basic if and only if the submatrix $A_{\su
     \end{pmatrix}
     =
     \begin{pmatrix}
-     a_1\\a_2\\b_1
+      a_1\\a_2\\b_1
     \end{pmatrix}.
   \end{equation}
   Every submatrix of $A$ with three columns is non-singular.
@@ -515,12 +515,12 @@ Also, $\supp(\xx)=\sup(\xx')\subset B\cap B'\subsetneq B$.
     \sum_{i\in K}a_i = \sum_{j\in L} b_j,
   \end{equation}
   then (as we shall see in Theorem~\ref{theorem:brualdi-algo}) both $\MM_{\aa_K\bb_L}$ and $\MM_{\aa_{\bar K}\bb_{\bar L}}$ are non-empty.
-    Putting together feasible points for these polytopes will with give us a point $\xx$ in $\MM_{\aa\bb}$ whose support is a forest, hence a proper subset of any basic subset.
-    Thus we have the following:
-    \begin{theorem}
-      Assume that $\aa>0$ and $\bb>0$.
-      The polytope $\MM_{\aa\bb}$ is degenerate if and only if there exist proper subsets $K\subset [r]$ and $L\subset [s]$ such that the condition \eqref{eq:transportation-degeneration} holds.
-    \end{theorem}
+  Putting together feasible points for these polytopes will with give us a point $\xx$ in $\MM_{\aa\bb}$ whose support is a forest, hence a proper subset of any basic subset.
+  Thus we have the following:
+  \begin{theorem}
+    Assume that $\aa>0$ and $\bb>0$.
+    The polytope $\MM_{\aa\bb}$ is degenerate if and only if there exist proper subsets $K\subset [r]$ and $L\subset [s]$ such that the condition \eqref{eq:transportation-degeneration} holds.
+  \end{theorem}
 \end{example}
 Since a finite union of coordinate hyperplanes is a nowhere dense subset of $\RR^n$, it is very unlikely that degeneracy will occur in a real-world linear programming problem.
 Moreover, if it does occur, a small enough perturbation of $\bb$ will bring us back to the non-degenerate world while giving the correct basic subset whose basic feasible solution also optimizes the original problem.
@@ -672,11 +672,11 @@ This can be avoided using \emph{Bland's rule} for choosing the leaving and enter
   Let $B$ be a basic subset in the cycle just before $x_v$ enters the basic set.
   Suppose that the simplex tableau corresponding to $B$ is:
   \begin{displaymath}
-      \begin{matrix}
-    \xx_B & = & \mathbf d - D\xx_{\bar B}\\
-    \hline
-    \cc^T\xx & = & e - \mathbf e^T \xx_{\bar B},
-  \end{matrix}
+    \begin{matrix}
+      \xx_B & = & \mathbf d - D\xx_{\bar B}\\
+      \hline
+      \cc^T\xx & = & e - \mathbf e^T \xx_{\bar B},
+    \end{matrix}
   \end{displaymath}
   Since we are following Bland's rule, $v$ is the least index among all possible entering variables.
   Therefore for any $j\in F-\{v\}$, since $j<v$, $e_j\leq 0$.
@@ -767,8 +767,8 @@ Similarly, if the objective function of \eqref{eq:lpdual} is unbounded below on 
   \begin{equation}
     \label{eq:duality-tab}
     \begin{array}{cc}
-    \bar\xx_B & = \bar A_B^{-1}\bb - \bar A_B^{-1}\bar A_{\bar B}\bar\xx_{\bar B}\\
-    \hline
+      \bar\xx_B & = \bar A_B^{-1}\bb - \bar A_B^{-1}\bar A_{\bar B}\bar\xx_{\bar B}\\
+      \hline
       \bar\cc^T\bar\xx & = \bar\cc^T\bar A_B^{-1}\bb + (\bar\cc_{\bar B}^T - \bar\cc_B^T\bar A_B^{-1}\bar A_{\bar B}\bar)\xx_{\bar B}.
     \end{array}
   \end{equation}
@@ -907,10 +907,44 @@ The pair $(N,A)$ is visualized by representing each node $x\in A$ by a circle la
   \begin{displaymath}
     A = \{(u,i)\mid 1\leq i\leq r\}\cup\{(i,j')\mid 1\leq i\leq r,2\leq j\leq s\}\cup\{(j',v)\mid 1\leq j\leq s\}.
   \end{displaymath}
-  This network, for $r=3$ and $s=4$, is represented by
-  \begin{center}
-    \includegraphics[width=0.5\textwidth]{transportation_network.png}  
-  \end{center}
+  This network, for $r=3$ and $s=4$, is represented by Figure~\ref{fig:transport}.
+  \begin{figure}
+    \begin{center}
+      \begin{tikzpicture}[scale=2]
+        \GraphInit[vstyle=Normal]
+        \Vertex[x=0,y=0,L=$u$]{U}
+        \Vertex[x=0,y=-1,L=$r_1$]{R1}
+        \Vertex[x=1,y=-1,L=$r_2$]{R2}
+        \Vertex[x=2,y=-1,L=$r_3$]{R3}
+        \Vertex[x=0,y=-2,L=$c_1$]{C1}
+        \Vertex[x=1,y=-2,L=$c_2$]{C2}
+        \Vertex[x=2,y=-2,L=$c_3$]{C3}
+        \Vertex[x=3,y=-2,L=$c_4$]{C4}
+        \Vertex[x=3,y=-3,L=$v$]{V}
+        \Edge[style={->},label=$a_1$](U)(R1)
+        \Edge[style={->},label=$a_2$](U)(R2)
+        \Edge[style={->},label=$a_3$](U)(R3)
+        \Edge[style={->},label=$b_1$](C1)(V)
+        \Edge[style={->},label=$b_2$](C2)(V)
+        \Edge[style={->},label=$b_3$](C3)(V)
+        \Edge[style={->},label=$b_4$](C4)(V)
+        \Edge[style={->}](R1)(C1)
+        \Edge[style={->}](R1)(C2)
+        \Edge[style={->}](R1)(C3)
+        \Edge[style={->}](R1)(C4)
+        \Edge[style={->}](R2)(C1)
+        \Edge[style={->}](R2)(C2)
+        \Edge[style={->}](R2)(C3)
+        \Edge[style={->}](R2)(C4)
+        \Edge[style={->}](R3)(C1)
+        \Edge[style={->}](R3)(C2)
+        \Edge[style={->}](R3)(C3)
+        \Edge[style={->}](R3)(C4)
+      \end{tikzpicture}
+    \end{center}
+    \caption{A transportation network}
+    \label{fig:transport}
+  \end{figure}
 \end{example}
 \begin{definition}
   [Flow]
@@ -934,9 +968,12 @@ The pair $(N,A)$ is visualized by representing each node $x\in A$ by a circle la
 \end{exercise}
 \begin{definition}
   [Capacity function]
-  A capacity function on a network $(N,A)$ is a function $c:A\to \RR_{\geq 0}$.
+  A capacity function on a network $(N,A)$ is a function $c:A\to \RR_{\geq 0}\cup\{\infty\}$.
   Given a capacity function, a \emph{feasible} flow is a flow on $(N,A)$ such that $f(x,y)\leq c(x.y)$ for every $(x.y)\in A$.
 \end{definition}
+The capacity of arcs are represented by edge labels.
+Labels for edges with infinite capacity are omitted.
+In Figure~\ref{fig:transport}, the edge joining $u$ to $r_i$ has capacity $a_i$ for $i=1,\dotsc,r$ and, the edge joining $s_j$ to $v$ has capacity $b_j$ for $j=1,\dotsc,s$ and all remaining edges have infinite capacity.
 Given a network $(N,A)$ with a capacity function $c:A\to \RR_{\geq}$, the maximal flow problem is:
 \begin{equation}
   \label{eq:flowmax}
@@ -947,6 +984,10 @@ The maximal flow problem is a linear program with variable $f(x,y)$ indexed by t
 The maxflow problem is a special case of a linear programming problem \eqref{eq:general-lp} from Section~\ref{sec:feas-opt}.
 The variables are $f(x,y)$, one for each arc $(x,y)\in N$, constrained to be non-negative.
 The constraints are equations \eqref{eq:net-zero} defining a flow (one euqation for each node in $N\setminus \{u,v\}$) and the inequalities $f(x,y)\leq c(x,y)$ for each arc $(x,y)\in A$. 
+\begin{example}
+  A feasible flow for the network in Figure~\ref{fig:transport} is equivalent to the auxilliary program (Example~\ref{example:transportation-vertex-algo} for the transportation problem.
+\end{example}
+
 \bibliographystyle{abbrv}
 \bibliography{refs}
 \end{document}
