@@ -587,32 +587,40 @@ Thus locating a basic subset is itself a linear programming problem with an obvi
   \label{example:transportation-vertex-algo}
   In order to construct an $m\times n$ transportation array with margins $\aa$ and $\bb$ (Example~\ref{example:transportation}), we introduce $r+s$ auxilliary variables $u_1,\dotsc,u_r$ and $v_1,\dotsc,v_s$.
   Consider the auxilliary linear program:
-  \begin{align*}
-    \sum_{j=1}^s x_{ij} + u_i & = a_i \text{ for } 1\leq i\leq r,\\
-    \sum_{i=1}^r x_{ij} + v_j & = b_j \text{ for } 1\leq j\leq s,\\
-    x_{ij}\geq 0,\;u_i\geq 0\;v_j\geq 0 &= \text{ for } 1\leq i\leq r,\;1\leq j\leq s,\\
-    \text{maximize} & -u_1-\dotsb -u_r - v_1 - \dotsb -v_s.
-  \end{align*}
+  \begin{equation}
+    \label{eq:transportation}
+    \begin{matrix}
+      \sum_{j=1}^s x_{ij} + u_i & = a_i \text{ for } 1\leq i\leq r,\\
+      \sum_{i=1}^r x_{ij} + v_j & = b_j \text{ for } 1\leq j\leq s,\\
+      x_{ij}\geq 0,\;u_i\geq 0\;v_j\geq 0 &= \text{ for } 1\leq i\leq r,\;1\leq j\leq s,\\
+      \hline
+      \text{maximize} & -u_1-\dotsb -u_r - v_1 - \dotsb -v_s.
+    \end{matrix}
+  \end{equation}
   This auxilliary program comes with a God-given basic variables $\{u_1,\dotsc,u_r,v_1,\dotsc,v_s\}$.
   The corresponding tableau is:
-  \begin{align*}
-    u_i & = a_i - \sum_{j=1}^s x_{ij} \text{ for } i=1,\dotsc,r,\\
-    v_j & = b_j - \sum_{i=1}^r x_{is} \text{ for } j=1,\dotsc,s,\\
-    \hline
-    \cc^T\xx &= -\sum a_i - \sum_j b_j + \sum_i\sum_j x_{ij}. 
-  \end{align*}
+  \begin{displaymath}
+    \begin{matrix}
+      u_i & = a_i - \sum_{j=1}^s x_{ij} \text{ for } i=1,\dotsc,r,\\
+      v_j & = b_j - \sum_{i=1}^r x_{is} \text{ for } j=1,\dotsc,s,\\
+      \hline
+      \cc^T\xx &= -\sum a_i - \sum_j b_j + \sum_i\sum_j x_{ij}. 
+    \end{matrix}
+  \end{displaymath}
   We may choose any $x_{ij}$ as entering variable.
   Then the leaving variable will be $u_i$ if $a_i<b_j$, and $v_j$ if $b_i<u_j$.
   If $a_i=b_j$ either variable could be chosen as leaving.
   We now have a new tableau, for example if we had chosen $x_{i_0j_0}$ as entering $u_{i_0}i$ as leaving,
-  \begin{align*}
-    x_{i_0j_0} & = a_{i_0} - u_{i_0} -\sum_{j\neq j_0} x_{i_0j}\\
-    v_{j_0} & = b_{j_0} - \sum_{i\neq i_0} x_{ij_0} - a_{i_0} + u_{i_0} + \sum_{j\neq j_0} x_{i_0,j}\\
-    u_i & = a_i - \sum_j x_{ij} \text{ for }i\neq i_0,\\
-    v_j & = b_j - \sum_{i=1}^r x_{is} \text{ for } j\neq j_0,\\
-    \hline
-    \cc^T\xx & = -\sum_{i\neq i_0} a_i - \sum b_j + \sum_{i\neq i_0}\sum_jx_{ij} -u_{i_0}. 
-  \end{align*}
+  \begin{displaymath}
+    \begin{matrix}
+      x_{i_0j_0} & = a_{i_0} - u_{i_0} -\sum_{j\neq j_0} x_{i_0j}\\
+      v_{j_0} & = b_{j_0} - \sum_{i\neq i_0} x_{ij_0} - a_{i_0} + u_{i_0} + \sum_{j\neq j_0} x_{i_0,j}\\
+      u_i & = a_i - \sum_j x_{ij} \text{ for }i\neq i_0,\\
+      v_j & = b_j - \sum_{i=1}^r x_{is} \text{ for } j\neq j_0,\\
+      \hline
+      \cc^T\xx & = -\sum_{i\neq i_0} a_i - \sum b_j + \sum_{i\neq i_0}\sum_jx_{ij} -u_{i_0}. 
+    \end{matrix}
+  \end{displaymath}
   The variables $x_{i_0,j}$ (the $i_0$th row) have dissapeared from the objective function.
   The $i_0$th row is now saturated and the rest of the algorithm would run with the same set of possible pivot steps as if the $i$th row simply did not exist, and $b_{j_0}=b_j-a_{i_0}$.
   The new margin vectors are:
@@ -893,7 +901,6 @@ where if $X$ is $\max$ then $Y$ is $\min$ and vice-versa, if $R_i$ is $\geq$, $\
 \end{proof}
 \chapter{Flows in Networks}
 \label{cha:flows-networks}
-
 \section{The flow optimization problem}
 \label{sec:flow-optim-probl}
 \begin{definition}[Network]
@@ -955,39 +962,162 @@ The pair $(N,A)$ is visualized by representing each node $x\in A$ by a circle la
     \tag{*}
     \sum_{\{y\mid (x,y)\in A\}}f(x,y) - \sum_{\{y\mid (y,x)\in A\}} f(y,x) = 0 \text{ for all } x\in N-\{u,v\}.
   \end{equation}
+  For subsets $M_1$ and $M_2$ of $N$ we use the shorthand:
+  \begin{displaymath}
+    f(M_1,M_2) = \sum_{\{(x,y)\in M_1\times M_2 \mid (x,y)\in A\}} f(x,y).
+  \end{displaymath}
+  If $M_1$ is the singleton set $\{x\}$ we write $f(x,M_2)$ for $f(M_1,M_2)$.
+  Similarly if $M_2=\{y\}$ we write $f(M_1,y)$ for $f(M_1,M_2)$.
+  Thus the equation \eqref{eq:net-zero} can be written as:
+  \begin{displaymath}
+    f(x,N)-f(N,x)=0 \text{ for every } x\in N.
+  \end{displaymath}
   The \emph{value} of the flow is defined as the net flow out of the source $u$:
   \begin{displaymath}
-    v = \sum_{\{y\mid (u,y)\in N\}} f(u,y) - \sum_{\{y\mid (y,u)\in N\}} f(y,u).
+    v_f = f(u,N) - f(N,u).
   \end{displaymath}
 \end{definition}
 \begin{exercise}
   Show that, for any flow $f$ on a network $(N,A)$ with source $u$ and sink $v$, the flow out of the source $u$ equals the net flow into the sink $v$:
   \begin{displaymath}
-    \sum_{\{y\mid (u,y)\in N\}} f(u,y) - \sum_{\{y\mid (y,u)\in N\}} f(y,u) = \sum_{\{y\mid (u,y)\in N\}} f(y,v) - \sum_{\{y\mid (y,u)\in N\}} f(v,y).
+    f(u,N)=f(N,v).
   \end{displaymath}
 \end{exercise}
 \begin{definition}
   [Capacity function]
   A capacity function on a network $(N,A)$ is a function $c:A\to \RR_{\geq 0}\cup\{\infty\}$.
-  Given a capacity function, a \emph{feasible} flow is a flow on $(N,A)$ such that $f(x,y)\leq c(x.y)$ for every $(x.y)\in A$.
+  Given a capacity function, a \emph{feasible} flow is a flow on $(N,A)$ such that $f(x,y)\leq c(x,y)$ for every $(x,y)\in A$.
 \end{definition}
 The capacity of arcs are represented by edge labels.
 Labels for edges with infinite capacity are omitted.
 In Figure~\ref{fig:transport}, the edge joining $u$ to $r_i$ has capacity $a_i$ for $i=1,\dotsc,r$ and, the edge joining $s_j$ to $v$ has capacity $b_j$ for $j=1,\dotsc,s$ and all remaining edges have infinite capacity.
-Given a network $(N,A)$ with a capacity function $c:A\to \RR_{\geq}$, the maximal flow problem is:
-\begin{equation}
-  \label{eq:flowmax}
-  \tag{F}
-  \text{maximize $v_f$ among all feasible flows on $(N,A)$ with capacity $c$.}
-\end{equation}
-The maximal flow problem is a linear program with variable $f(x,y)$ indexed by the set $A$ of arcs in the network.
-The maxflow problem is a special case of a linear programming problem \eqref{eq:general-lp} from Section~\ref{sec:feas-opt}.
-The variables are $f(x,y)$, one for each arc $(x,y)\in N$, constrained to be non-negative.
-The constraints are equations \eqref{eq:net-zero} defining a flow (one euqation for each node in $N\setminus \{u,v\}$) and the inequalities $f(x,y)\leq c(x,y)$ for each arc $(x,y)\in A$. 
-\begin{example}
-  A feasible flow for the network in Figure~\ref{fig:transport} is equivalent to the auxilliary program (Example~\ref{example:transportation-vertex-algo} for the transportation problem.
-\end{example}
+Given a network $(N,A)$ with a capacity function $c:A\to \RR_{\geq}$, the maximal flow problem is to maximize $v_f$ among all feasible flows on $(N,A)$ with capacity $c$.
 
+To summarize, the max-flow problem has variables $f(x,y)$, for $(x,y)\in A$, and a variable $v$, and is given by:
+\begin{equation}
+  \label{eq:max-flow}
+  \tag{F}
+  \begin{array}{rll}
+    f(x,N)-f(N,x)&=0 &\text{ for every $x\in N-\{u,v\}$},\\
+    f(u,N)-f(N,u)-v&=0,&\\
+    f(v,N)-f(N,v)+v&=0,&\\
+    f(x,y)&\leq c(x,y)&\text{ for every $(x,y)\in A$}\\
+    \hline
+    \text{maximize } & f(u,N)-f(N,u). &
+  \end{array}
+\end{equation}
+Let us consider the program dual to \eqref{eq:max-flow}.
+It has a variable $\tau(x)\in \RR$ for $x\in N$, and a variable $\gamma(x,y)\geq 0$ for every $(x,y)\in A$.
+For every $(x,y)$ in $A$ it has the constraint:
+\begin{equation}
+  \tag{DF}
+  \label{eq:dual-flow}
+  \begin{array}{rl}
+  \tau(x)-\tau(y)+\gamma(x,y) & \geq 0 \\
+  \tau(v)-\tau(u)& \geq 1.
+  \end{array}
+\end{equation}
+and objective:
+\begin{displaymath}
+  \text{minimize } \sum_{(x,y)\in A} c(x,y)\gamma(x,y).
+\end{displaymath}
+\begin{definition}
+  Let $(N,A)$ be a network, and $x,y\in N$.
+  A \emph{path} from $x$ to $y$ is a sequence:
+  \begin{displaymath}
+    x=x_0,x_1,\dotsc,x_n=y \text{ such that } (x_{i-1},x_i)\in A \text{ for all }i=1,\dotsc,n.
+  \end{displaymath}
+\end{definition}
+\begin{exercise}
+  Assume that $c(x,y)>0$ for all $(x,y)\in A$.
+  Use the duality theorem to show that if there is no path from $u$ to $v$ in $A$, then the maximum value of a feasible flow is is $0$.
+\end{exercise}
+\begin{definition}
+  A \emph{cut} of the network $(N,A)$ is a partition $N=X\sqcup \bar X$ of its nodes such that $u\in X$ and $y\in \bar X$.
+  The capacity of the cut $c(X,\bar X)$ is defined to be:
+  \begin{displaymath}
+    c(X,\bar X) = \sum_{\{(x,y)\in A\mid x\in X,y\in \bar X\}} c(x,y).
+  \end{displaymath}
+\end{definition}
+\begin{lemma}
+  If $N=X\sqcup \bar X$ is a cut of $N$, then the value of any feasible flow is bounded above by $c(X,\bar X)$.
+\end{lemma}
+\begin{proof}
+  Define
+  \begin{displaymath}
+    \gamma(x,y)=
+    \begin{cases}
+      1 & \text{if } x\in X,y\in \bar X,\\
+      0 & \text{otherwise}.
+    \end{cases}
+  \end{displaymath}
+  Define $\tau(x)=0$ for $x\in X$ and $\tau(x)=1$ for $x\in \bar X$.
+  Then $\tau$ and $\gamma$ define a feasible solution for \eqref{eq:dual-flow}.
+  The value of the objective is $c(X,\bar X)$, so this must be an upper bound for \eqref{eq:max-flow}.
+\end{proof}
+\begin{lemma}
+  \label{lemma:augmentation}
+  Let $f$ be a feasible flow.
+  Define a new network $(N,A_f)$ by:
+  \begin{displaymath}
+    (x,y) \in A_f \text{ if }
+    \begin{cases}
+      (x,y)\in A \text{ and } f(x,y)<c(x,y),\\
+      (y,x)\in A \text{ and } f(x,y)>0.
+    \end{cases}
+  \end{displaymath}
+  If there is no path from $u$ to $v$ in $(N,A_f)$, then $f$ is a feasible flow of maximum value.
+\end{lemma}
+\begin{proof}
+  Let $X$ denote the set of all nodes $x\in N$ such that $(N,A_f)$ admits a path from $u$ to $x$.
+  The flow from $X$ into $\bar X$ is:
+  \begin{displaymath}
+    f(X,\bar X) = \sum_{\{(x,y)\in A\mid x\in X,y\in \bar X\}} f(x,y)-\sum_{\{(x,y)\in A\mid x\in \bar X,y\in X\}} f(x,y) = v_f.
+  \end{displaymath}
+  Since no point from $X$ has path to any point in $\bar X$ in the network $(N,A_f)$, we must have:
+  \begin{gather*}
+    f(x,y) = c(x,y) \text{ for all } (x,y)\in A, x\in X,y\in \bar X,\\
+    f(x,y) = 0 \text{ for all } (x,y)\in A, x\in \bar X,\in X.
+  \end{gather*}
+  Therefore $f(X,\bar X)=c(X,\bar X)$ is a common value of the objective functions of \eqref{eq:max-flow} and its dual \eqref{eq:dual-flow}, hence optimal for both by the duality theorem (Theorem~\ref{theorem:duality} of Chapter~\ref{cha:intro-lp}).
+\end{proof}
+We are now close to prving the main theorem of this section:
+\begin{theorem}
+  [Max flow-min cut theorem]
+  \label{theorem:max-flow-min-cut}
+  The value of any optimal feasible flow for a network $(N,A)$ with capacity $c$ is equal to the minimum capacity of a cut of $(N,A)$.
+\end{theorem}
+\begin{proof}
+  Let $f$ be a feasible flow.
+  If it satisfies the hypothesis of Lemma~\ref{lemma:augmentation}, then it is optimal, and result follows.
+  If not, let $P=(u=x_0,x_1,\dotsc,x_n=v)$ be a path in $(N,A_f)$ from $u$ to $v$.
+  For any arc $(x,y)\in A_f$, define its \emph{spare capacity} as:
+  \begin{displaymath}
+    c'(x,y) =
+    \begin{cases}
+      c(x,y)-f(x,y) &\text{if } (x,y)\in A \text{ and } f(x,y)<c(x,y),\\
+      f(y,x) &\text{if } (y,x)\in A \text{ and } f(y,x)>0.
+    \end{cases}
+  \end{displaymath}
+  Let $m=\min\{c'(x_{i-1},x_i)\mid i=1,\dotsc,n\}$.
+  By construction $m>0$.
+  The \emph{augmentation of $f$ along $P$} is the flow
+  \begin{align*}
+    \tilde f(x_{i-1},x_i) & = f(x_{i-1},x_i) + m &\text{if $(x_{i-1},x_i)\in A$ and $f(x,y)<c(x,y)$},\\
+    \tilde f(x_i,x_{i-1}) & = f(x_i,x_{i-1}) - m & \text{if $(x_i,x_{i-1})\in A$ and $f(x_i,x_{i-1})>0$},
+  \end{align*}
+  for some $i=1,\dotsc,n$, and setting all remaining values of $\tilde f$ the same as those of $f$.
+  Then $\tilde f$ is a feasible flow with value $v+m$, showing that $f$ was not optimal.
+\end{proof}
+The proof of the max flow-min cut theorem suggests an algorithm to find an optimal flow:
+\begin{enumerate}
+\item Begin with the zero flow $f\equiv 0$.
+\item While the network $(N,A_f)$ admits a path $P$ from $u$ to $v$:
+  \begin{itemize}
+  \item   augment $f$ along $P$.
+  \end{itemize}
+\item Return $f$.
+\end{enumerate}
 \bibliographystyle{abbrv}
 \bibliography{refs}
 \end{document}
