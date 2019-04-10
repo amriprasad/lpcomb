@@ -901,7 +901,7 @@ where if $X$ is $\max$ then $Y$ is $\min$ and vice-versa, if $R_i$ is $\geq$, $\
 \end{proof}
 \chapter{Flows in Networks}
 \label{cha:flows-networks}
-\section{The flow optimization problem}
+\section{The flow maximization problem}
 \label{sec:flow-optim-probl}
 \begin{definition}[Network]
   A network is a pair $(N,A)$, where $N$ is set and $A\subset N^2$.
@@ -909,7 +909,8 @@ where if $X$ is $\max$ then $Y$ is $\min$ and vice-versa, if $R_i$ is $\geq$, $\
   A \emph{source} in a network is a distinguished node $u\in N$, and a target is a distinguished node $v\in N$, different from $u$.
 \end{definition}
 The pair $(N,A)$ is visualized by representing each node $x\in A$ by a circle labeled $x$, and each element of $A=(x,y)$ by an arrow joining the circle labeled $x$ to the circle labeled $y$.
-\begin{example}
+\begin{example}[Transportation networks]
+  \label{example:transportation-network}
   Let $N=\{u,1,2,\dotsc,r,1',2',\dotsc,s',v\}$, and
   \begin{displaymath}
     A = \{(u,i)\mid 1\leq i\leq r\}\cup\{(i,j')\mid 1\leq i\leq r,2\leq j\leq s\}\cup\{(j',v)\mid 1\leq j\leq s\}.
@@ -974,38 +975,41 @@ The pair $(N,A)$ is visualized by representing each node $x\in A$ by a circle la
   \end{displaymath}
   The \emph{value} of the flow is defined as the net flow out of the source $u$:
   \begin{displaymath}
-    v_f = f(u,N) - f(N,u).
+    w_f = f(u,N) - f(N,u).
   \end{displaymath}
 \end{definition}
 \begin{exercise}
-  Show that, for any flow $f$ on a network $(N,A)$ with source $u$ and sink $v$, the flow out of the source $u$ equals the net flow into the sink $v$:
+  Show that, for any flow $f$ on a network $(N,A)$ with source $u$ and sink $v$, the net flow out of the source $u$ equals the net net flow into the sink $v$:
   \begin{displaymath}
-    f(u,N)=f(N,v).
+    w_f=f(u,N)-f(N,u)=f(N,v)-f(v,N).
   \end{displaymath}
 \end{exercise}
 \begin{definition}
   [Capacity function]
-  A capacity function on a network $(N,A)$ is a function $c:A\to \RR_{\geq 0}\cup\{\infty\}$.
+  A capacity function on a network $(N,A)$ is a function $c:A\to (0,\infty]$ (the value $\infty$ is permitted).
   Given a capacity function, a \emph{feasible} flow is a flow on $(N,A)$ such that $f(x,y)\leq c(x,y)$ for every $(x,y)\in A$.
 \end{definition}
 The capacity of arcs are represented by edge labels.
 Labels for edges with infinite capacity are omitted.
-In Figure~\ref{fig:transport}, the edge joining $u$ to $r_i$ has capacity $a_i$ for $i=1,\dotsc,r$ and, the edge joining $s_j$ to $v$ has capacity $b_j$ for $j=1,\dotsc,s$ and all remaining edges have infinite capacity.
-Given a network $(N,A)$ with a capacity function $c:A\to \RR_{\geq}$, the maximal flow problem is to maximize $v_f$ among all feasible flows on $(N,A)$ with capacity $c$.
+In Example~\ref{example:transportation-network}, set $c(u,r_i)=a_i$ for $i=1,\dotsc,r$ and $c(s_j,v)=b_j$ for $j=1,\dotsc,s$, and all remaining arcs to have infinite capacity.
+See Figure~\ref{fig:transport} for the visualization of this capacity function.
 
-To summarize, the max-flow problem has variables $f(x,y)$, for $(x,y)\in A$, and a variable $v$, and is given by:
+Given a network $(N,A)$ with a capacity function $c:A\to (0,\infty]$, the maximal flow problem is to maximize $v_f$ among all feasible flows on $(N,A)$ with capacity $c$.
+
+Thus the max-flow problem has variables $f(x,y)$, for $(x,y)\in A$, and a variable $w$ (representing the value of the flow), and is given by:
 \begin{equation}
   \label{eq:max-flow}
   \tag{F}
   \begin{array}{rll}
     f(x,N)-f(N,x)&=0 &\text{ for every $x\in N-\{u,v\}$},\\
-    f(u,N)-f(N,u)-v&=0,&\\
-    f(v,N)-f(N,v)+v&=0,&\\
+    f(u,N)-f(N,u)-w&=0,&\\
+    f(v,N)-f(N,v)+w&=0,&\\
     f(x,y)&\leq c(x,y)&\text{ for every $(x,y)\in A$}\\
     \hline
     \text{maximize } & f(u,N)-f(N,u). &
   \end{array}
 \end{equation}
+
 Let us consider the program dual to \eqref{eq:max-flow}.
 It has a variable $\tau(x)\in \RR$ for $x\in N$, and a variable $\gamma(x,y)\geq 0$ for every $(x,y)\in A$.
 For every $(x,y)$ in $A$ it has the constraint:
@@ -1029,12 +1033,11 @@ and objective:
   \end{displaymath}
 \end{definition}
 \begin{exercise}
-  Assume that $c(x,y)>0$ for all $(x,y)\in A$.
   Use the duality theorem to show that if there is no path from $u$ to $v$ in $A$, then the maximum value of a feasible flow is is $0$.
 \end{exercise}
 \begin{definition}
-  A \emph{cut} of the network $(N,A)$ is a partition $N=X\sqcup \bar X$ of its nodes such that $u\in X$ and $y\in \bar X$.
-  The capacity of the cut $c(X,\bar X)$ is defined to be:
+  A \emph{cut} of the network $(N,A)$ is a partition $N=X\sqcup \bar X$ of its nodes such that $u\in X$ and $v\in \bar X$.
+  The capacity $c(X,\bar X)$ of the cut is defined as:
   \begin{displaymath}
     c(X,\bar X) = \sum_{\{(x,y)\in A\mid x\in X,y\in \bar X\}} c(x,y).
   \end{displaymath}
@@ -1062,7 +1065,7 @@ and objective:
   \begin{displaymath}
     (x,y) \in A_f \text{ if }
     \begin{cases}
-      (x,y)\in A \text{ and } f(x,y)<c(x,y),\\
+      (x,y)\in A \text{ and } f(x,y)<c(x,y), \text{ or}\\
       (y,x)\in A \text{ and } f(x,y)>0.
     \end{cases}
   \end{displaymath}
@@ -1072,7 +1075,7 @@ and objective:
   Let $X$ denote the set of all nodes $x\in N$ such that $(N,A_f)$ admits a path from $u$ to $x$.
   The flow from $X$ into $\bar X$ is:
   \begin{displaymath}
-    f(X,\bar X) = \sum_{\{(x,y)\in A\mid x\in X,y\in \bar X\}} f(x,y)-\sum_{\{(x,y)\in A\mid x\in \bar X,y\in X\}} f(x,y) = v_f.
+    f(X,\bar X) = \sum_{\{(x,y)\in A\mid x\in X,y\in \bar X\}} f(x,y)-\sum_{\{(x,y)\in A\mid x\in \bar X,y\in X\}} f(x,y) = w_f.
   \end{displaymath}
   Since no point from $X$ has path to any point in $\bar X$ in the network $(N,A_f)$, we must have:
   \begin{gather*}
@@ -1085,13 +1088,13 @@ We are now close to prving the main theorem of this section:
 \begin{theorem}
   [Max flow-min cut theorem]
   \label{theorem:max-flow-min-cut}
-  The value of any optimal feasible flow for a network $(N,A)$ with capacity $c$ is equal to the minimum capacity of a cut of $(N,A)$.
+  The maximum value for feasible flows on a network $(N,A)$ with capacity $c$ is equal to the minimum capacity of its cuts.
 \end{theorem}
 \begin{proof}
   Let $f$ be a feasible flow.
   If it satisfies the hypothesis of Lemma~\ref{lemma:augmentation}, then it is optimal, and result follows.
   If not, let $P=(u=x_0,x_1,\dotsc,x_n=v)$ be a path in $(N,A_f)$ from $u$ to $v$.
-  For any arc $(x,y)\in A_f$, define its \emph{spare capacity} as:
+  For each arc $(x,y)\in A_f$, define its \emph{spare capacity} as:
   \begin{displaymath}
     c'(x,y) =
     \begin{cases}
@@ -1101,15 +1104,18 @@ We are now close to prving the main theorem of this section:
   \end{displaymath}
   Let $m=\min\{c'(x_{i-1},x_i)\mid i=1,\dotsc,n\}$.
   By construction $m>0$.
-  The \emph{augmentation of $f$ along $P$} is the flow
+  The \emph{augmentation of $f$ along $P$} is the flow $\tilde f$ for which
   \begin{align*}
     \tilde f(x_{i-1},x_i) & = f(x_{i-1},x_i) + m &\text{if $(x_{i-1},x_i)\in A$ and $f(x,y)<c(x,y)$},\\
     \tilde f(x_i,x_{i-1}) & = f(x_i,x_{i-1}) - m & \text{if $(x_i,x_{i-1})\in A$ and $f(x_i,x_{i-1})>0$},
   \end{align*}
-  for some $i=1,\dotsc,n$, and setting all remaining values of $\tilde f$ the same as those of $f$.
-  Then $\tilde f$ is a feasible flow with value $v+m$, showing that $f$ was not optimal.
+  for each $i=1,\dotsc,n$, and all remaining values of $\tilde f$ are the same as those of $f$.
+  Then $\tilde f$ is a feasible flow with value $w_f+m$, showing that $f$ was not optimal.
 \end{proof}
 The proof of the max flow-min cut theorem suggests an algorithm to find an optimal flow:
+\begin{center}
+  \textbf{Flow Augmentaiton Algorithm}
+\end{center}
 \begin{enumerate}
 \item Begin with the zero flow $f\equiv 0$.
 \item While the network $(N,A_f)$ admits a path $P$ from $u$ to $v$:
@@ -1118,6 +1124,21 @@ The proof of the max flow-min cut theorem suggests an algorithm to find an optim
   \end{itemize}
 \item Return $f$.
 \end{enumerate}
+\begin{theorem}
+  Let $(N,A)$ be a networs with capacity funcion $c$ taking positive integer, or infinite values.
+  If the set of values of feasible flows is bounded above, then the flow augmentation algorithm terminates in a finite number of steps and returns a flow with maximal value.
+\end{theorem}
+\begin{proof}
+  The integrality of the capacities implies that the minimum spare capacity $m$ along a path of augmentation as in the proof of Theorem~\ref{theorem:max-flow-min-cut} is a positive integer.
+  Therefore, during each run of the main loop of the algorithm the value of the resulting flow increases by $1$.
+  Therefore, it the maximum possible value of all feasible flows is finite, it will be achieved in a finite number of steps.
+\end{proof}
+\begin{remark}
+  The flow augmentation algorithm returns an integer-valued flow when the capacity function is integer-valued.
+\end{remark}
+\section{The cost minimization poblem}
+\label{sec:cost-minim-pobl}
+
 \bibliographystyle{abbrv}
 \bibliography{refs}
 \end{document}
