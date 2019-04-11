@@ -1,5 +1,5 @@
 \documentclass{amsbook}
-\usepackage{tkz-graph,graphicx,amssymb,hyperref}
+\usepackage{ytableau,tkz-graph,graphicx,amssymb,hyperref}
 \newcommand{\vv}{\mathbf v}
 \newcommand{\xx}{\mathbf x}
 \newcommand{\yy}{\mathbf y}
@@ -9,6 +9,7 @@
 \newcommand{\supp}{\mathrm{supp}}
 \newcommand{\RR}{\mathbf R}
 \newcommand{\MM}{\mathbf M}
+\newcommand{\NN}{\mathbf N}
 \newtheorem{theorem}{Theorem}[section]
 \newtheorem{lemma}[theorem]{Lemma}
 \newtheorem{corollary}[theorem]{Corollary}
@@ -1017,8 +1018,8 @@ For every $(x,y)$ in $A$ it has the constraint:
   \tag{DF}
   \label{eq:dual-flow}
   \begin{array}{rl}
-  \tau(x)-\tau(y)+\gamma(x,y) & \geq 0 \\
-  \tau(v)-\tau(u)& \geq 1.
+    \tau(x)-\tau(y)+\gamma(x,y) & \geq 0 \\
+    \tau(v)-\tau(u)& \geq 1.
   \end{array}
 \end{equation}
 and objective:
@@ -1136,9 +1137,160 @@ The proof of the max flow-min cut theorem suggests an algorithm to find an optim
 \begin{remark}
   The flow augmentation algorithm returns an integer-valued flow when the capacity function is integer-valued.
 \end{remark}
-\section{The cost minimization poblem}
-\label{sec:cost-minim-pobl}
 
+\section{The supply-demand problem}
+\label{sec:supply-demand-probl}
+
+Consider a network $(N,A)$ with distinguished disjoint subsets $U$ and $V$ of nodes called supply nodes and demand nodes respectively.
+Define functions $a:U\to [0,\infty)$ and $b:V\to [0,\infty)$ representing supply and demand values at these nodes.
+Suppose also that a capacity function $c:A\to (0,\infty]$ is given.
+
+The supply-demand problem is the following: determine if there exists a function $f:A\to [0,\infty)$ such that:
+\begin{align}
+  \tag{SD1}\label{eq:sd1}f(u,N)-f(N,u) & \leq a(u) \text{ for all }u\in U,\\
+  \tag{SD2}\label{eq:sd2}f(v,N)-f(N,v) & \leq -b(u) \text{ for all }v\in V,\\
+  \tag{SD3}\label{eq:sd3}f(x,N)-f(N,x) & = 0 \text{ for all }x\in N-(U\cup V),\\
+  \tag{SD4}\label{eq:sd4}f(x,y) & \leq c(x,y) \text{ for all } (x,y)\in A.
+\end{align}
+This is a feasibilty problem, and so we take the objective function to be identically $0$.
+The dual problem has variables $\tau(x)\in \RR$ for $x\in N$ and $\gamma(x,y)\geq 0$ for $(x,y)\in A$, satisfying:
+\begin{displaymath}
+  \tau(x)-\tau(y)+\gamma(x,y)\geq 0 \text{ for all } (x,y)\in A.
+\end{displaymath}
+The objective is:
+\begin{displaymath}
+  \text{minimize } \sum_{(x,y)\in A} c(x,y)\gamma(x,y)+\sum_{u\in U}a(u)\tau(u)-\sum_{v\in V}b(v)\tau(v).
+\end{displaymath}
+Suppose that $N=X\cup \bar X$ is any partition of $N$ into two parts.
+As usual, let $\gamma(x,y)=1$ if $x\in X$ and $y\in \bar X$, and $0$ otherwise.
+Let $\tau(x)=0$ for $x\in X$ and $\tau(x)=1$ for $x\in \bar X$.
+These are feasible values for the dual program, and the value of the objective function is:
+\begin{displaymath}
+  a(\bar X\cap U) - b(\bar X\cap V) + c(X,\bar X). 
+\end{displaymath}
+If the primal program were feasible, then the maximum value of its objective function, namely $0$, would be a lower bound for the objective function of the dual.
+Therefore, if the supply demand problem has a feasible solution then:
+\begin{equation}
+  \label{eq:aggregate-supply}
+  b(\bar X\cap V) - a(\bar X\cap U) \leq c(X,\bar X) \text{ for every cut } N=X\cup \bar X.
+\end{equation}
+In other words, for every subset $\bar X$ of $N$, the shortfall in supply from nodes in $\bar X$ against demand from nodes in $\bar X$ cannot exceed the amount that can be supplied accross the cut $X\to \bar X$.
+\begin{theorem}
+  [Gale's supply-demand theorem]
+  \label{theorem:supply-demand}
+  The supply-demand problem has a feasible solution if and only if the condition \eqref{eq:aggregate-supply} is satisfied.
+\end{theorem}
+\begin{proof}
+  Enlarge the network $(N,A)$ to $(N^*,A^*)$, where $N^*=N\cup\{u_0,v_0\}$, and $A^*=A\cup\{(u_0,u)\mid u\in U\}\cup \{(v,v_0)\mid v\in V\}$.
+  For any cut $N^*=X^*\cup \bar X^*$, let $X=X^*\cap N$ and $\bar X = \bar X^*\cap N$.
+  \begin{align*}
+    c(X^*,\bar X^*) & = a(\bar X\cap U) + b(X\cap V) + c(X,\bar X)\\
+                    & = a(\bar X\cap U) - b(\bar X\cap V) + c(X,\bar X) + b(V)\\
+                    & \geq b(V)=c(\{u_0\}\cup N,\{v_0\}), 
+  \end{align*}
+  the last line being the capacity of the cut $(\{u_0\}\cup N,\{v_0\})$ separting $v_0$ from all the nodes in $N^*$.
+  Therefore $(\{u_0\}\cup N,\{v_0\})$ is a cut in $(N^*,A^*)$ of minimum capacity $b(V)$.
+  It follows that $(N^*,A^*)$ has a feasible flow with value $b(V)$.
+  The restriction of this flow to $(N,A)$ is a feasible solution to the supply-demand problem.
+\end{proof}
+\begin{remark}
+  If the functions $a$ and $b$ are integer-valued, then the supply-demand problem has an integer-valued feasible solution.
+\end{remark}
+\begin{corollary}
+  Given vectors $\aa\in \RR^r$, $\bb\in \RR^s$ with positive coordinates, let $\NN_{\aa\bb}$ denote the set of all $r\times s$ matrices $x_{ij}$ such that
+  \begin{gather*}
+    0\leq x_{ij}\leq 1 \text{ for all }1\leq i\leq r,1\leq j\leq s,\\
+    \sum_{j=1}^s x_{ij} = a_i \text{ for all } 1\leq i\leq r,\\
+    \sum_{i=1}^r x_{ij} = b_j \text{ for all } 1\leq j\leq s.
+  \end{gather*}
+  Then $\NN_{\aa\bb}$ is non-empty if and only if, for every subset $R\subset [r]$ and every subset $S\subset [s]$,
+  \begin{displaymath}
+    \sum_{i\in R} a_i - \sum_{j\in S} b_j \leq (r-|R|)|S|.
+  \end{displaymath}
+  Moreover, $\NN_{\aa\bb}$ is non-empty if and only if it has an integer point.
+\end{corollary}
+\begin{proof}
+  Consider a network $N$ whose set of nodes is the disjoint union of $[r]$ and $[s]$.
+  Let $U=[r]$ and $V=[s]$.
+  Let $A=\{(i,j)\mid i\in [r],j\in [s]\}$.
+  Define $c(i,j)=1$, $a(i)=a_i$, $b(j)=b_j$ for $i\in [r]$ and $j\in [s]$.
+  Let $f$ be a feasible solution to this supply demand problem.
+  Setting $x_{ij}=f(i,j)$ gives a point in $\NN_{\aa\bb}$.
+
+  By Theorem~\ref{theorem:supply-demand}, this exists if and only if, for every subset $X\subset [r]\sqcup [s]$,
+  \begin{displaymath}
+    a(\bar X\cap [r]) - b(\bar X\cap [s]) \leq c(X,\bar X).
+  \end{displaymath}
+  setting $R=\bar X\cap [r]$ and $S=\bar X\cap [s]$ gives the condition in the theorem.
+\end{proof}
+\begin{corollary}
+  \label{cor:aggregate-supply}
+  There exists a function $f:A\to [0,\infty)$ satisfying \eqref{eq:sd1}--~\eqref{eq:sd4} if and only if, for every subset $V'\subset V$, there exists a function $f_{V'}:A\to [0,\infty)$ satisfying \eqref{eq:sd1}, \eqref{eq:sd3}, and \eqref{eq:aggregate-supply}, such that
+  \begin{equation}
+    \label{eq:V'}
+    \tag{SD5}
+    f_{V'}(N,V')-f_{V'}(V',N)\geq b(V').
+  \end{equation}
+\end{corollary}
+\begin{proof}
+  If $f$ satisfies \eqref{eq:sd1}--~\eqref{eq:sd4}, then it obviously satisfies \eqref{eq:V'}.
+
+  Conversely, suppose such an $f_{V'}$ exists for every $V'\subset V$.
+  Let $N=X\cup \bar X$ be a partition.
+  Take $V'=V\cap \bar X$.
+  Then, using \eqref{eq:sd1}, \eqref{eq:sd3}, and \eqref{eq:V'} we have:
+  \begin{align*}
+    -a(U\cap\bar X)&\leq f_{V'}(N,U\cap \bar X)-f_{V'}(U\cap\bar X, N),\\
+    0 & = f_{V'}(N,N_0\cap \bar X)-f_{V'}(N_0\cap\bar X, N),\\
+    b(V\cap \bar X) & \leq f_{V'}(N,V\cap \bar X)-f_{V'}(V\cap\bar X,N).
+  \end{align*}
+  Adding up gives:
+  \begin{displaymath}
+    b(V\cap\bar X)-a(U\cap\bar X) \leq f_{V'}(N,\bar X) - f_{V'}(\bar X, N) = f_{V'}(X,\bar X)-f_{V'}(\bar X,X).
+  \end{displaymath}
+  Finally \eqref{eq:sd4} implies that $f_{V'}(X,\bar X)-f_{V'}(\bar X,X)\leq c(X,\bar X)$.
+  Thus the the inequality \eqref{eq:aggregate-supply} is satisfied and the corollary follows from Theorem~\ref{theorem:supply-demand}.
+\end{proof}
+Given a vector $\aa\in \RR^r$, let $\aa^\downarrow$ denote the vector obtained from $\aa$ by replacing its entries in weakly decreasing order.
+Let $a^\downarrow_i$ denote the $i$th coordinate of $\aa^\downarrow$ (the $i$th \emph{order statistic} of $\aa$).
+\begin{definition}
+  \label{definition:majorization}
+  Given two vectors $\aa\in \RR^r$ and $\bb\in \RR^s$, we say that $\aa$ majorizes $\bb$ if, for every $1\leq k\leq r$,
+  \begin{displaymath}
+    \sum_{i=1}^k a^\downarrow_i \geq \sum_{i=1}^k b^\downarrow_i. 
+  \end{displaymath}
+  We write $\aa\rhd \bb$.
+\end{definition}
+Suppose $V'\subset V$.
+A flow $f_{V'}$ which satisfies \eqref{eq:sd1}, \eqref{eq:sd3}, and \eqref{eq:sd4} of maximum value is obtained by simply taking supplying as much as possible from each $a_i$ to $V'$.
+If $|V'|=k$, then
+Therefore $f_{V'}(u_i,V')=\min(a_i,k)$.
+Summing over all $u\in U$ gives $f_{V'}(N,V')=f_{V'}(U,V')=\sum_{i=1}^r\min(a_i,k)$.
+The condition \eqref{eq:V'} becomes:
+\begin{equation}
+  \label{eq:gr}
+  \sum_{i=1}^k \min(a_i,k)\geq \sum_{j\in V"} b_j \text{ for every } V'\subset V \text{ with } |V'|=k.
+\end{equation}
+Represent the vector $\aa$ by its Young diagram.
+This is a configuration of $s$ left-justified rows of boxes, the $i$th row consisting of $a_i$ boxes.
+For example, if $\aa=(3,1,2,2)$, then the Young diagram is:
+\begin{displaymath}
+  \ydiagram{3,1,2,2}
+\end{displaymath}
+Then the left hand side of \eqref{eq:gr} is the number of boxes in the first $r$ columns of the Young diagram of $a$.
+Define $\aa'=(a'_1,a'_2,\dotsc)$ by $a'_1+\dotsc + a'_r=\sum_{i=1}^r \min(a_i,r)$, the number of boxes in the $r$th column of the Young diagram of $\aa$.
+Then $\aa'$ is an integer partition, known as the \emph{conjugate} of $\aa$.
+The condition \eqref{eq:gr} becomes:
+\begin{displaymath}
+  \sum_{i=1}^k a'_i \geq \sum_{j\in V'}b_j \text{ for every $V'\subset V$ with $|V'|=k$}.
+\end{displaymath}
+Then the above inequalities are equivalent to:
+\begin{displaymath}
+  \sum_{i=1}^k a'_i \geq \sum_{i=1}^k b^{\downarrow}_i.
+\end{displaymath}
+In other words, the partition $\aa'\rhd \bb$.
+\section{The cost minimization problem}
+\label{sec:cost-minim-probl}
 \bibliographystyle{abbrv}
 \bibliography{refs}
 \end{document}
