@@ -10,6 +10,7 @@
 \newcommand{\RR}{\mathbf R}
 \newcommand{\MM}{\mathbf M}
 \newcommand{\NN}{\mathbf N}
+\newcommand{\ZZ}{\mathbf Z}
 \newtheorem{theorem}{Theorem}[section]
 \newtheorem{lemma}[theorem]{Lemma}
 \newtheorem{corollary}[theorem]{Corollary}
@@ -1137,6 +1138,25 @@ The proof of the max flow-min cut theorem suggests an algorithm to find an optim
 \begin{remark}
   The flow augmentation algorithm returns an integer-valued flow when the capacity function is integer-valued.
 \end{remark}
+Let $\Gamma$ be a bipartite graph with vertex set $N=U\coprod V$, and edge set contained in $U\times V$.
+Suppose $\{(x_1,y_1),\dotsc,(x_k,y_k)\}$ is a matching in $\Gamma$, then any vertex cover of $\Gamma$ must contain at least one vertex from each of these edges.
+Thus the minimum size of a vertex cover of $\Gamma$ must be at least as large as the maximum size of a matching.
+The K\"onig-Egerv\'ary theorem states that these two quantities are equal:
+\begin{theorem}
+  For a biparite graph on vertex set $U\sqcup V$, the minimum size of a vertex cover equals the maximum number of edges in a matching in $\Gamma$.
+\end{theorem}
+\begin{proof}
+  Let $N$ be the netowrk with nodes $U\sqcup V\sqcup \{u,v\}$, with arcs $(u,x)$ for all $x\in U$, $(x,v)$ for all $x\in V$, and $(x,y)$ for all $x\in U$ and $y\in V$ such that $\{x,y\}$ is an edge of $\Gamma$.
+  Assign capacity $1$ to the arcs of the form $(u,x)$, $x\in V$ and $(x,v)$, $x\in U$.
+  Allow the arcs joining $U$ to $V$ infinite capacity.
+
+  A maximal value flow in $(N,A)$ corresponds to a maximal matching in $\Gamma$ (with flow of $1$ along the arcs corresponding to the edges in the matching).
+  If $X\sqcup \bar X$ is a cut of finite capacity, it cannot contain any arc with infinite capacity.
+  Therefore, there are no edges in $\Gamma$ between vertices from $X\cap U$ and $\bar X\cap V$, or in other words, every edge in $\Gamma$ corresponds to an arc with both end points in $X$ or both end points in $\bar X$.
+  Thus $(\bar X\cap U)\cup (X\cap V)$ is a vertex cover.
+  The capacity of this cut is $|\bar X\cap U|+|X\cap V|$.
+  Thus the K\"onig Egerv\'ary theorem follows from the max flow-min cut theorem.
+\end{proof}
 
 \section{The supply-demand problem}
 \label{sec:supply-demand-probl}
@@ -1148,7 +1168,7 @@ Suppose also that a capacity function $c:A\to (0,\infty]$ is given.
 The supply-demand problem is the following: determine if there exists a function $f:A\to [0,\infty)$ such that:
 \begin{align}
   \tag{SD1}\label{eq:sd1}f(u,N)-f(N,u) & \leq a(u) \text{ for all }u\in U,\\
-  \tag{SD2}\label{eq:sd2}f(v,N)-f(N,v) & \leq -b(u) \text{ for all }v\in V,\\
+  \tag{SD2}\label{eq:sd2}f(v,N)-f(N,v) & \leq -b(v) \text{ for all }v\in V,\\
   \tag{SD3}\label{eq:sd3}f(x,N)-f(N,x) & = 0 \text{ for all }x\in N-(U\cup V),\\
   \tag{SD4}\label{eq:sd4}f(x,y) & \leq c(x,y) \text{ for all } (x,y)\in A.
 \end{align}
@@ -1342,8 +1362,76 @@ In other words, the partition $\aa'\rhd \bb$.
   \item There exists a bipartite simple graph on vertex set $[r]\sqcup [s]$ such that the degree of each $i\in [r]$ is $a_i$ and the degree of $j\in [s]$ is $b)j$ if and only if $\aa'\rhd \bb$.
   \end{enumerate}
 \end{exercise}
+
+\section{The Hitchcock Problem}
+\label{sec:hitchcock-problem}
+
+Given vectors $\aa\in \ZZ_{\geq 0}^r$ and $\bb in \ZZ_{\geq 0}^s$ with the same sum, and a \emph{cost array} $(a_{ij})_{r\times s}$, the Hitchcock problem is the following linear program in variables $f_{ij}\geq 0$:
+\begin{equation}
+  \tag{H}
+  \label{eq:hitchcock}
+  \begin{array}{rcl}
+    -\sum_{j=1}^s f_{ij} & \geq & - a_i \text{ for }i=1,\dotsc,r,\\
+    \sum_{i=1}^r f_{ij} & \geq & b_j \text{ for }j=1,\dotsc,s,\\
+    \hline
+    \text{minimize} && \sum_{i=1}^r\sum_{j=1}^s a_{ij}f_{ij}.
+  \end{array}
+\end{equation}
+The constraints are like in the supply demand problems in Section~\ref{sec:supply-demand-probl}, but now there is an ibjective function with positive coefficients.
+
+The dual program has variables $\alpha_i>0$ for $i=1,\dotsc,r$ and $\beta_j\geq 0$ for $j=1,\dotsc,s$, and is given by:
+\begin{equation}
+  \tag{DH}
+  \label{eq:dual-hitch}
+  \begin{array}{rcl}
+    -\alpha_i + \beta_j & \geq & a_{ij},\\
+    \text{maximize} && -\sum_{i=1}^r a_i\alpha_i + \sum_{j=1}^s b_j\beta_j.
+  \end{array}
+\end{equation}
+
+Suppose $(\alpha_1,\dotsc,\alpha_r,\beta_1,\dotsc,\beta_s)$ is a feasible solution for \eqref{eq:dual-hitch}, and $(f_{ij})$ is a feasible solution for \eqref{eq:hitchcock} such that:
+\begin{equation}
+  \label{eq:tight}
+  -\alpha_i + \beta_j < a_{ij} \implies f_{ij}=0.
+\end{equation}
+Then,
+\begin{align*}
+  \sum_{i=1}^r \sum_{j=1}^s a_{ij}f_{ij} & = \sum_{-\alpha_i+\beta_j<a_{ij}} a_{ij}f_{ij} + \sum_{-\alpha_i+\beta_j=a_{ij}} a_{ij}f_{ij}\\
+                                         & = 0 + \sum_{-\alpha+\beta_j=a_{ij}} (-\alpha_i+\beta_j)f_{ij}\\
+  & = -\sum_{i=1}^r \alpha_i a_i + \sum_{j=1}^s \beta_jb_j.
+\end{align*}
+Thus we have feasible points for \eqref{eq:hitchcock} and \eqref{eq:dual-hitch} where where the objective functions coincide, hence are optimal.
+
+A strategy to solve the Hithcock problem is to try and find such a pair of solutions.
+Begin with an obvious feasible solution to \eqref{eq:dual-hitch}: Take $\alpha_i=0$ for all $i$, and $\beta_j = \min\{a_{ij}\mid i=1,\dotsc,r\}$ for $j=1,\dotsc,s$.
+Now use the flow augmentaion algorithm on the network $N^*$  from the proof of Theorem~\ref{theorem:supply-demand} to try and find a feasible solution with $f_{ij}\geq 0$ to:
+\begin{equation}
+  \label{eq:2}
+  \begin{array}{rcl}
+    -\sum_{j=1}^s f_{ij} & \geq & - a_i \text{ for }i=1,\dotsc,r,\\
+    \sum_{i=1}^r f_{ij} & \geq & b_j \text{ for }j=1,\dotsc,s,\\
+    f_{ij} & = & 0 \text{ if } -\alpha_i+\beta_j = a_{ij}.
+  \end{array}
+\end{equation}
+This is a supply demand problem in a modified transportation network (Example~\ref{example:transportation-network}) where some of the arcs $(i,j')$ are blocked.
+
+If such a solution exists, then, as explained above, we have feasible solutions to \eqref{eq:hitchcock} and \eqref{eq:dual-hitch} with equal values of their objective functions, and we are done.
+
+Otherwise, proceeding as in the proof of Lemma~\ref{lemma:augmentation}, Let $X\subset N^*$ denote the set of nodes reachable from $u_0$ in the modified transportaion network where arcs $(i,j')$ are blocked when $-\alpha_i+\beta_j<a_{ij}$.
+Increase $\alpha_i$ and $\beta_j$ by $1$ for all the nodes in $\bar X$.
+Since all the arcs between $X$ and $\bar X$ had slack ($-\alpha_i+\beta_j<a_{ij}$ when $i\in X$ and $j'\in \bar X$), the modified values of the dual variable are still feasible.
+
+Now go back and to solving \eqref{eq:2} with the modified dual variables.
+Continue this process unitl either an optimal common value for the objective functions of \eqref{eq:hitchcock} and \eqref{eq:dual-hitch} are found.
+If this algorithm fails to produce a flow even when $-\alpha_i+\beta_j=a_{ij}$ for all $i,j$, then the transportation problem itself is infeasible. 
 \section{The cost minimization problem}
 \label{sec:cost-minim-probl}
+The Hitchcock problem is a special case of a more general minimal cost supply-demand problem, where the constraints \eqref{eq:sd1}--~\eqref{eq:sd4} of Section~\ref{sec:supply-demand-probl} on variables $f(x,y)\geq 0$ are paired with the objective:
+\begin{displaymath}
+  \text{maximize } \sum_{(x,y)\in A} a(x,y) f(x,y).
+\end{displaymath}
+Assume that the cost function $a:A\to [0,\infty)$ and the capacity function $c:A\to (0,\infty]$ are integer valued (but $c$ is allowed infinite values).
+Also the supply and demand constrains $a$ and $b$ are 
 \bibliographystyle{abbrv}
 \bibliography{refs}
 \end{document}
