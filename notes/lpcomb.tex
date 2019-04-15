@@ -1437,15 +1437,15 @@ We modify the problem a little bit for convenience.
 Add nodes $u_0$ and $v_0$ to the network, and connect $u_0$ to each node $u\in U$ by an arc of capacity $a(u)$ and cost $0$.
 Connect $v_0$ to each node $v\in V$ with an arc of capacity $b(v)$ and cost $0$.
 Denote the resulting network by $(N^*,A^*)$.
-We introduce an auxilliary variable $w$ for the value of the flow.
-The modified program has variables $f(x,y)\geq 0$ for each $(x,y)\in A^*$, and a variable $w\geq 0$, and is given by:
+We introduce an unrestricted variable $w$ for the value of the flow.
+The modified program has variables $f(x,y)\geq 0$ for each $(x,y)\in A^*$, and a variable $w\in \RR$, and is given by:
 \begin{equation}
   \tag{C}
   \label{eq:min-cost}
   \begin{array}{rcl}
-    f(u,N)-f(N,u)&=&v,\\
+    f(u,N)-w&=&0,\\
     f(x,N)-f(N,x)&=&0 \text{ for }x\in N^*-\{u,v\},\\
-    f(v,N)-f(N,v)&=&v,\\
+    f(v,N)+w&=&0,\\
     f(x,y)&\leq&c(x,y) \text{ for }(x,y)\in A^*.\\
     \hline
     \text{minimize}&&pw-\sum_{(x,y)\in A} a(x,y)f(x,y).
@@ -1461,9 +1461,74 @@ The dual has variables $\tau(x)\in \RR$ for $x\in N^*$, and $\gamma(x,y)\geq 0$ 
     -\tau(u)+\tau(v) & = & p,\\
     \tau(x)-\tau(y)+\gamma(x,y)&\geq& -a(x,y) \text{ for }(x,y)\in A^*,\\
     \hline
-    \text{minimize}&&\sum_{(x,y)\in A^*} c(x,y)\gamma(x,y).
+    \text{maximize}&&-\sum_{(x,y)\in A^*} c(x,y)\gamma(x,y).
   \end{array}
 \end{equation}
+\begin{lemma}
+  \label{lemma:cost-optimality}
+  If $f$, $\tau$ and $\gamma$ are feasible solutions to \eqref{eq:min-cost} and \eqref{eq:DC} which satisfy:
+  \begin{align*}
+    \tau(u)=0, \tau(v)=p,&\\
+    \tau(x)-\tau(y)+\gamma(x,y)>-a(x,y) & \implies f(x,y)=0,\\
+    \gamma(x,y)>0 & \implies f(x,y)=c(x,y),
+  \end{align*}
+  Then they have the same value of the the objective function, hence are optimal.
+\end{lemma}
+\begin{proof}
+  We have:
+  \begin{align*}
+    pw-\sum_{(x,y)\in A^*} a(x,y)f(x,y) & = pw-\sum_{(x,y)\in A^*} (\tau(x)-\tau(y)+\gamma(x,y))f(x,y)\\
+                                        & = pw - \sum_{(x,y)\in A^*} (\tau(x)-\tau(y))f(x,y)\\&\phantom{=} - \sum_{(x,y)\in A^*} \gamma(x,y)c(x,y)\\
+                                        & = pw - \tau(x)(f(x,N) - f(N,x)) - \sum_{(x,y)\in A^*}\gamma(x,y)c(x,y)\\
+    & = -\sum_{(x,y)\in A^*}\gamma(x,y)c(x,y),
+  \end{align*}
+  whence the objectives of \eqref{eq:min-cost} and \eqref{eq:DC} are equal.
+\end{proof}
+It is now more or less clear how to solve the cost minimization algorithms:
+
+Begin with $\tau\equiv 0$, $\gamma\equiv 0$, $f\equiv 0$.
+The conditions of Lemma~\ref{lemma:cost-optimality} are satisfied.
+
+Suppose, at a given stage of the algorithm we have $\tau$, $\gamma$, and $f$ satisfying the conditions of Lemma~\ref{lemma:cost-optimality}, with $p=\tau(v)$.
+Construct an auxilliary network $(N^*,A^\dagger)$ with capacity $c^\dagger$ as follows:
+For $x,y\in N^*$, $(x,y)$ is an arc of $A^\dagger$ if either:
+\begin{itemize}
+\item $(x,y)\in A$, $\tau(x)-\tau(y)+\gamma(x,y)=-a(x,y)$ and $f(x,y)<c(x,y)$.
+  Set $c^\dagger(x,y)=c(x,y)-f(x,y)$.
+\item $(y,x)\in A$, $f(y,x)>0$, $\gamma(x,y)=0$.
+  Set $c^\dagger(x,y)=f(y,x)$.
+\end{itemize}
+If there exists a path from $u$ to $v$ in $(N^*,A^\dagger)$, augment $f$ along this path.
+Because of the way in which we have chosen the nodes of the auxilliary network, the augemented flow still satisfies the conditions ot Lemma~\ref{lemma:cost-optimality}.
+If there is no path from $u$ to $v$ in $(N^*,A^\dagger)$, then set $\tau'(x)=\tau(x)+1$ for every node $x\in N^*$ that is not reachable from $u$, and $\tau'(x) = \tau(x)$ for every node reachable from $u$.
+We claim that:
+\begin{displaymath}
+  \tau'(y)-\tau'(x)<a(x,y)\implies f(x,y)=0.
+\end{displaymath}
+This can happen in two ways.
+Either $\tau(y)-\tau(x)=\tau'(y)-\tau'(x)$, so $f(x,y)=0$.
+Otherwise, $\tau'(y)=\tau(y)$ but $\tau'(x)=\tau(x)+1$.
+So $x$ was not reachable from $u$ in $(N^*,A^\dagger)$, while $y$ was.
+Then $f(x,y)$ must be $0$, since otherwise, $x$ would be reachable through $y$ since $(y,x)\in A^\dagger$.
+We also claim that:
+\begin{displaymath}
+  \tau'(y)-\tau'(x)>a(x,y) \implies f(x,y)=c(x,y).
+\end{displaymath}
+The proof is a similar consideration of cases.
+
+Thus, at each stage of the algorithm, either $p$ is incremented by $1$, or $w$ is incremented by a positive integer.
+At each stage the flow $f_p$ maximizes the objective function of \eqref{eq:min-cost} for the current value of $p$.
+
+Given a path $u=x_0,x_1,\dotsc,x_n=v$ such that either $(x_{i-1},x_i)\in A^*$ (forward arcs) or $(x_i,x_{i-1})\in A^*$ (reverse arcs), define the path cost to be the sum of the costs of the forward arcs minus the sum of the costs of the reverse arcs.
+\begin{theorem}
+  Once $p$ exceeds the maximum path cost of all paths from $u$ to $v$, then $f_p$ is a flow of minimum cost among all maximum value flows.
+\end{theorem}
+\begin{proof}
+  If not, then $f_p$ is not a maximum value flow.
+  An augmenting path in the auxilliary netowrk will have at least one forward arc $(x,y)$ such that $\tau(y)-\tau(x)<a(x,y)$ or at least one reverse arc $(y,x)$ such that $tau(y)-\tau(x)>a(x,y)$.
+  Therefore $p=\tau(v)-\tau(u)$ will be strictly less than the path cost of this path, a contradiction.
+\end{proof}
+
 \bibliographystyle{abbrv}
 \bibliography{refs}
 \end{document}
