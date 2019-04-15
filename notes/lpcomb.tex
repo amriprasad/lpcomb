@@ -1431,7 +1431,39 @@ The Hitchcock problem is a special case of a more general minimal cost supply-de
   \text{maximize } \sum_{(x,y)\in A} a(x,y) f(x,y).
 \end{displaymath}
 Assume that the cost function $a:A\to [0,\infty)$ and the capacity function $c:A\to (0,\infty]$ are integer valued (but $c$ is allowed infinite values).
-Also the supply and demand constrains $a$ and $b$ are 
+Also the supply and demand constrains $a$ and $b$ are integer-valued.
+
+We modify the problem a little bit for convenience.
+Add nodes $u_0$ and $v_0$ to the network, and connect $u_0$ to each node $u\in U$ by an arc of capacity $a(u)$ and cost $0$.
+Connect $v_0$ to each node $v\in V$ with an arc of capacity $b(v)$ and cost $0$.
+Denote the resulting network by $(N^*,A^*)$.
+We introduce an auxilliary variable $w$ for the value of the flow.
+The modified program has variables $f(x,y)\geq 0$ for each $(x,y)\in A^*$, and a variable $w\geq 0$, and is given by:
+\begin{equation}
+  \tag{C}
+  \label{eq:min-cost}
+  \begin{array}{rcl}
+    f(u,N)-f(N,u)&=&v,\\
+    f(x,N)-f(N,x)&=&0 \text{ for }x\in N^*-\{u,v\},\\
+    f(v,N)-f(N,v)&=&v,\\
+    f(x,y)&\leq&c(x,y) \text{ for }(x,y)\in A^*.\\
+    \hline
+    \text{minimize}&&pw-\sum_{(x,y)\in A} a(x,y)f(x,y).
+  \end{array}
+\end{equation}
+The quantity $p$ is a parameter, set to take values $0,1,2,\dotsc$ sequentially.
+As $p$ increases, minimal cost flows of successively higher values are obtained, and for $p$ sufficiently large, flows of maximal value are obtained (without reference to the cost function).
+The dual has variables $\tau(x)\in \RR$ for $x\in N^*$, and $\gamma(x,y)\geq 0$ for $(x,y)\in A^*$ and is given by:
+\begin{equation}
+  \label{eq:DC}
+  \tag{DC}
+  \begin{array}{rcl}
+    -\tau(u)+\tau(v) & = & p,\\
+    \tau(x)-\tau(y)+\gamma(x,y)&\geq& -a(x,y) \text{ for }(x,y)\in A^*,\\
+    \hline
+    \text{minimize}&&\sum_{(x,y)\in A^*} c(x,y)\gamma(x,y).
+  \end{array}
+\end{equation}
 \bibliographystyle{abbrv}
 \bibliography{refs}
 \end{document}
