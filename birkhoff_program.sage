@@ -17,3 +17,11 @@ def symmetric_transportation_mat(n):
         A[n+k,L.index((s[0],s[1]))]=1
         A[n+k,L.index((s[1],s[0]))]=-1
     return A
+
+def birkhoff_program(n):
+    P = MixedIntegerLinearProgram()
+    x = P.new_variable(nonnegative=True)
+    for i in range(n):
+        P.add_constraint(sum([x[i,j] for j in range(n)])==1)
+        P.add_constraint(sum([x[j,i] for j in range(n)])==1)
+    return P

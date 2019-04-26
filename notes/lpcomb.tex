@@ -1,5 +1,5 @@
 \documentclass{amsbook}
-\usepackage{ytableau,tkz-graph,graphicx,amssymb,hyperref}
+\usepackage{stmaryrd,ytableau,tkz-graph,graphicx,amssymb,hyperref}
 \newcommand{\vv}{\mathbf v}
 \newcommand{\xx}{\mathbf x}
 \newcommand{\yy}{\mathbf y}
@@ -11,6 +11,8 @@
 \newcommand{\MM}{\mathbf M}
 \newcommand{\NN}{\mathbf N}
 \newcommand{\ZZ}{\mathbf Z}
+\newcommand{\CC}{\mathbf C}
+\newcommand{\ps}[1]{\CC\llbracket#1\rrbracket}
 \newtheorem{theorem}{Theorem}[section]
 \newtheorem{lemma}[theorem]{Lemma}
 \newtheorem{corollary}[theorem]{Corollary}
@@ -1127,7 +1129,7 @@ The proof of the max flow-min cut theorem suggests an algorithm to find an optim
 \item Return $f$.
 \end{enumerate}
 \begin{theorem}
-  Let $(N,A)$ be a networs with capacity funcion $c$ taking positive integer, or infinite values.
+  Let $(N,A)$ be a network with capacity funcion $c$ taking positive integer, or infinite values.
   If the set of values of feasible flows is bounded above, then the flow augmentation algorithm terminates in a finite number of steps and returns a flow with maximal value.
 \end{theorem}
 \begin{proof}
@@ -1366,25 +1368,25 @@ In other words, the partition $\aa'\rhd \bb$.
 \section{The Hitchcock Problem}
 \label{sec:hitchcock-problem}
 
-Given vectors $\aa\in \ZZ_{\geq 0}^r$ and $\bb in \ZZ_{\geq 0}^s$ with the same sum, and a \emph{cost array} $(a_{ij})_{r\times s}$, the Hitchcock problem is the following linear program in variables $f_{ij}\geq 0$:
+Given vectors $\aa\in \ZZ_{\geq 0}^r$ and $\bb \in \ZZ_{\geq 0}^s$ with the same sum, and a \emph{cost array} $(a_{ij})_{r\times s}$, the Hitchcock problem is the following linear program in variables $f_{ij}\geq 0$:
 \begin{equation}
   \tag{H}
   \label{eq:hitchcock}
   \begin{array}{rcl}
-    -\sum_{j=1}^s f_{ij} & \geq & - a_i \text{ for }i=1,\dotsc,r,\\
-    \sum_{i=1}^r f_{ij} & \geq & b_j \text{ for }j=1,\dotsc,s,\\
+    \sum_{j=1}^s f_{ij} & \leq & a_i \text{ for }i=1,\dotsc,r,\\
+    -\sum_{i=1}^r f_{ij} & \leq & -b_j \text{ for }j=1,\dotsc,s,\\
     \hline
-    \text{minimize} && \sum_{i=1}^r\sum_{j=1}^s a_{ij}f_{ij}.
+    \text{maximize} && - \sum_{i=1}^r\sum_{j=1}^s a_{ij}f_{ij}.
   \end{array}
 \end{equation}
-The constraints are like in the supply demand problems in Section~\ref{sec:supply-demand-probl}, but now there is an ibjective function with positive coefficients.
+The constraints are like in the supply demand problems in Section~\ref{sec:supply-demand-probl}, but now there is an bijective function with positive coefficients.
 
-The dual program has variables $\alpha_i>0$ for $i=1,\dotsc,r$ and $\beta_j\geq 0$ for $j=1,\dotsc,s$, and is given by:
+The dual program has variables $\alpha_i\geq 0$ for $i=1,\dotsc,r$ and $\beta_j\geq 0$ for $j=1,\dotsc,s$, and is given by:
 \begin{equation}
   \tag{DH}
   \label{eq:dual-hitch}
   \begin{array}{rcl}
-    -\alpha_i + \beta_j & \geq & a_{ij},\\
+    -\alpha_i + \beta_j & \leq & a_{ij},\\
     \text{maximize} && -\sum_{i=1}^r a_i\alpha_i + \sum_{j=1}^s b_j\beta_j.
   \end{array}
 \end{equation}
@@ -1410,7 +1412,7 @@ Now use the flow augmentaion algorithm on the network $N^*$  from the proof of T
   \begin{array}{rcl}
     -\sum_{j=1}^s f_{ij} & \geq & - a_i \text{ for }i=1,\dotsc,r,\\
     \sum_{i=1}^r f_{ij} & \geq & b_j \text{ for }j=1,\dotsc,s,\\
-    f_{ij} & = & 0 \text{ if } -\alpha_i+\beta_j = a_{ij}.
+    f_{ij} & = & 0 \text{ if } -\alpha_i+\beta_j < a_{ij}.
   \end{array}
 \end{equation}
 This is a supply demand problem in a modified transportation network (Example~\ref{example:transportation-network}) where some of the arcs $(i,j')$ are blocked.
@@ -1448,7 +1450,7 @@ The modified program has variables $f(x,y)\geq 0$ for each $(x,y)\in A^*$, and a
     f(v,N)+w&=&0,\\
     f(x,y)&\leq&c(x,y) \text{ for }(x,y)\in A^*.\\
     \hline
-    \text{minimize}&&pw-\sum_{(x,y)\in A} a(x,y)f(x,y).
+    \text{maximize}&&pw-\sum_{(x,y)\in A} a(x,y)f(x,y).
   \end{array}
 \end{equation}
 The quantity $p$ is a parameter, set to take values $0,1,2,\dotsc$ sequentially.
@@ -1486,8 +1488,9 @@ The dual has variables $\tau(x)\in \RR$ for $x\in N^*$, and $\gamma(x,y)\geq 0$ 
 \end{proof}
 It is now more or less clear how to solve the cost minimization algorithms:
 
-Begin with $\tau\equiv 0$, $\gamma\equiv 0$, $f\equiv 0$.
-The conditions of Lemma~\ref{lemma:cost-optimality} are satisfied.
+Begin with $p=0$.
+Set $\tau\equiv 0$, $\gamma\equiv 0$, $f\equiv 0$.
+These are feasible solution to \eqref{eq:min-cost} and \eqref{eq:DC}, where the conditions of Lemma~\ref{lemma:cost-optimality} are also satisfied.
 
 Suppose, at a given stage of the algorithm we have $\tau$, $\gamma$, and $f$ satisfying the conditions of Lemma~\ref{lemma:cost-optimality}, with $p=\tau(v)$.
 Construct an auxilliary network $(N^*,A^\dagger)$ with capacity $c^\dagger$ as follows:
@@ -1529,6 +1532,85 @@ Given a path $u=x_0,x_1,\dotsc,x_n=v$ such that either $(x_{i-1},x_i)\in A^*$ (f
   Therefore $p=\tau(v)-\tau(u)$ will be strictly less than the path cost of this path, a contradiction.
 \end{proof}
 
+\chapter{Generating Functions}
+\label{cha:gen-fns}
+
+\section{Power Series Expansions of Rational Functions}
+\label{sec:power-seri-expans}
+
+\begin{definition}
+  [The Ring of Formal Power Series]
+  The ring of power series is thet set
+  \begin{displaymath}
+    \ps t = \left\{\sum_{n=0}^\infty a_nt^n\mid a_n\in \CC\right\},
+  \end{displaymath}
+  with addition defined componentwise:
+  \begin{displaymath}
+    \sum  a_n t^n + \sum b_nt^b = \sum (a_n+b_n) t^n,
+  \end{displaymath}
+  and multiplication defined by the formula:
+  \begin{displaymath}
+    \left(\sum a_n x^n\right)\left(\sum b_n x^n\right) = \sum \left(\sum_{k+l=n} a_kb_l\right)t^n.
+  \end{displaymath}
+  Here, whenever a summation symbol $\sum$ appears without a specified range, it is assumed to represent $\sum_{n=0}^\infty$.
+\end{definition}
+Formal power series do not always represent functions on any domain. For example, $\sum n!x^n$ is perfectly valid as a formal power series.
+However the series does not converge for any non-zero value of $x$.
+The ring $\ps x$ is a unital domain, the unit being given by the series with constant term $1$, and all other terms $0$.
+
+\begin{lemma}
+  The units in $\ps x$ are the series of the form $\sum a_nx^n$ with $a_0\neq 0$.
+\end{lemma}
+\begin{proof}
+  An inverse can be found by solving for its coefficients:
+  \begin{displaymath}
+    \sum a_n x^n \sum b_n x^n =1.
+  \end{displaymath}
+  Applying the fomula for multiplication gives:
+  \begin{align*}
+    a_0b_0 &  = 1,\\
+    a_0b_1 + a_1b_0 & = 0,\\
+    a_0b_2 + a_1b_1 + a_2b_0 & = 0,
+  \end{align*}
+  from which the values $b_0,b_1,\dotsc$ can be successively derieved, provided $a_0\neq 0$.
+\end{proof}
+\begin{example}
+  For every $a\in \CC$, we have:
+  \begin{displaymath}
+    (1-ax)^{-1} = \sum a^nx^n.
+  \end{displaymath}
+  We write $(1-ax)^{-1}$ as $(1-ax)$.
+\end{example}
+\begin{exercise}
+  The ring $\ps x$ comes endowed with a linear operator $\frac d{dx}:\ps x\to \ps x$ defined by:
+  \begin{displaymath}
+    \frac d{dx} \sum a_n x^n = \sum (n+1)a_{n+1}x^n.
+  \end{displaymath}
+\end{exercise}
+\begin{exercise}
+  Show that
+  \begin{displaymath}
+    \frac 1{(1-ax)^}
+  \end{displaymath}
+\end{exercise}
+The ring $\ps x$ contains the ring $\CC[x]$ of polynomials as a subring.
+Polynomials with non-zero constant term are units in $\ps x$, and therefore admit inverses in $\ps x$.
+Thus, if $P(x)$ and $Q(x)$ are polynomials in $\CC[x]$ with $Q(x)$ having non-zero constant term, then  we have $P(x)Q(x)^{-1}\in \ps x$.
+We are interested in understanding the relationship between $P(x)$, $Q(x)$ and the coefficients $\{a_n\}$ of $P(x)/Q(x) \in \ps x$:
+\begin{displaymath}
+  \frac{P(x)}{Q(x)} = \sum a_n x^n.
+\end{displaymath}
+By moving it up to $P(x)$, we can assume that $Q(x)$ has constant coefficient equal to $1$.
+In other words,
+\begin{displaymath}
+  Q(x) = 1+\alpha_1 x + \dotsb + \alpha_d x^d,
+\end{displaymath}
+for some $d\geq 0$, with $\alpha_d\neq 0$.
+The fundamental theorem of algebra says that we can write:
+\begin{displaymath}
+  Q(x) = \prod_{i=1}^k (1-\gamma_i x)^{m_i},
+\end{displaymath}
+for some complex numbers $\gamma_1,\dotsc,\gamma_k$ (the \emph{inverse roots} of $Q(x)$) and non-negative integers $m_1,\dotsc,m_k$ (their respective multiplicities).
 \bibliographystyle{abbrv}
 \bibliography{refs}
 \end{document}
