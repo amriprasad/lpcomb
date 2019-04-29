@@ -1557,7 +1557,6 @@ Given a path $u=x_0,x_1,\dotsc,x_n=v$ such that either $(x_{i-1},x_i)\in A^*$ (f
 Formal power series do not always represent functions on any domain. For example, $\sum n!x^n$ is perfectly valid as a formal power series.
 However the series does not converge for any non-zero value of $x$.
 The ring $\ps x$ is a unital domain, the unit being given by the series with constant term $1$, and all other terms $0$.
-
 \begin{lemma}
   The units in $\ps x$ are the series of the form $\sum a_nx^n$ with $a_0\neq 0$.
 \end{lemma}
@@ -1581,17 +1580,38 @@ The ring $\ps x$ is a unital domain, the unit being given by the series with con
   \end{displaymath}
   We write $(1-ax)^{-1}$ as $(1-ax)$.
 \end{example}
+Caution should be exercised while composing formal power series.
+For instance, taking $f(x)=\sum x_n$ and $g(x)=2-x$, a simple-minded attempt at substitution leads to:
+\begin{displaymath}
+  f\circ g(x) = \sum  (2-x)^n.
+\end{displaymath}
+The $n$th summand on the right hand side contributes $2^n$ to the constant term of $f\circ g$, so a formal attempt at defining $g\circ g$ fails.
+If $g(x)=\sum b_nx^n$, we suggestively write $g(0)=b_0$.
+Now suppose $g(0)=0$.
+Then formal substitution gives:
+\begin{displaymath}
+  f\circ g(x) = \sum_{n=0}^\infty a_n\left(\sum_{m=1}^\infty b_mx^m\right)^n.
+\end{displaymath}
+The $n$ term on the right hand side does not contribute to coefficients of $x^k$ for $k<n$.
+This allows for a formal definition of $f\circ g$.
+It is not difficult to show that, with some caveats, many identities from the calculus of analytic functions remain valid for formal power series. For example, the derivative can be defined for formal power series:
 \begin{exercise}
-  The ring $\ps x$ comes endowed with a linear operator $\frac d{dx}:\ps x\to \ps x$ defined by:
+  The ring $\ps x$ comes endowed with a linear operator $\frac d{dx}:\ps x\to \ps x$ defined by $\frac d{dx}f(x) = f'(x)$, where:
   \begin{displaymath}
-    \frac d{dx} \sum a_n x^n = \sum (n+1)a_{n+1}x^n.
+    f'(x)=\sum a_n x^n = \sum (n+1)a_{n+1}x^n.
+  \end{displaymath}
+  Show that this linear operator satisfies the product rule:
+  \begin{displaymath}
+    (fg)'(x) = f'(x)g(x)+f(x)g'(x).
   \end{displaymath}
 \end{exercise}
 \begin{exercise}
+  \label{ex:geom-diff}
   Show that
   \begin{displaymath}
-    \frac 1{(1-ax)^}
+    \frac 1{(1-ax)^{m}} = \sum (-1)^k\binom{n+k}k a^n x^n.
   \end{displaymath}
+  For each fixed $k$ the term $\binom{n+k}n=\frac{(n+1)\dotsb(n+k)}{k!}$ is a polynomial of $n$ with coefficients in $\frac 1{k!}\ZZ$.
 \end{exercise}
 The ring $\ps x$ contains the ring $\CC[x]$ of polynomials as a subring.
 Polynomials with non-zero constant term are units in $\ps x$, and therefore admit inverses in $\ps x$.
@@ -1611,6 +1631,20 @@ The fundamental theorem of algebra says that we can write:
   Q(x) = \prod_{i=1}^k (1-\gamma_i x)^{m_i},
 \end{displaymath}
 for some complex numbers $\gamma_1,\dotsc,\gamma_k$ (the \emph{inverse roots} of $Q(x)$) and non-negative integers $m_1,\dotsc,m_k$ (their respective multiplicities).
+The theory of partial fractions then tells us that:
+\begin{displaymath}
+  \frac{P(x)}{Q(x)} = P_0(x) + \sum_{i=1}^k \sum_{j=1}^{m_i} \frac{a_{ij}}{(1-\gamma_i x)^j},
+\end{displaymath}
+where $P_0$ is a polynomial in $x$ of degree $\deg P(x)-\deg Q(x)$.
+Applying the result of Exercise~\ref{ex:geom-diff} allows us to conclude:
+\begin{displaymath}
+  \frac{P(x)}{Q(x)} = P_0(x) + \sum_{n=0}^\infty \sum_{i=1}^k \phi_i(n)\gamma_i^nx^n.
+\end{displaymath}
+In other words, the coefficient $a_n$ of $x^n$ in the power series expansion of $P(x)/Q(x)$ is
+\begin{displaymath}
+  a_n = \sum_{i=1}^l \phi_i(n)\gamma_i^n,
+\end{displaymath}
+for some polynomials $\phi_n$ in $n$ of degree at most $m_i$, for all $n>\deg P(x) - \deg Q(x)$.
 \bibliographystyle{abbrv}
 \bibliography{refs}
 \end{document}
